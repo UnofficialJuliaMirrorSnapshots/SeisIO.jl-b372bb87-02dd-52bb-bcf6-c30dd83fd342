@@ -1,4 +1,4 @@
-using Compat, Dates, SeisIO, SeisIO.RandSeis, Test
+using Compat, Dates, DSP, SeisIO, SeisIO.RandSeis, Test
 import DelimitedFiles: readdlm
 import Random: rand, randperm, randstring
 import SeisIO: FDSN_event_xml, FDSN_sta_xml, bad_chars, datafields, hdrfields, minreq, minreq!, parse_charr, safe_isfile, safe_isdir, sμ, t_collapse, t_expand, t_win, tnote, w_time, μs
@@ -7,7 +7,7 @@ import SeisIO.RandSeis: getyp2codes, pop_rand_dict!
 # All constants needed by tests are here
 const path = Base.source_dir()
 println(stdout, "SeisIO path = ", path)
-const unicode_chars = String.(readdlm("SampleFiles/julia-unicode.csv", '\n')[:,1])
+const unicode_chars = String.(readdlm(path*"/SampleFiles/julia-unicode.csv", '\n')[:,1])
 const n_unicode = length(unicode_chars)
 const breaking_dict = Dict{String,Any}(
   "0" => rand(Char), "1" => randstring(rand(51:100)),
@@ -25,6 +25,24 @@ const breaking_dict = Dict{String,Any}(
   "224" => collect(rand(Complex{Int8}, rand(4:24))), "225" => collect(rand(Complex{Int16}, rand(4:24))), "226" => collect(rand(Complex{Int32}, rand(4:24))), "227" => collect(rand(Complex{Int64}, rand(4:24))), "228" => collect(rand(Complex{Int128}, rand(4:24))),
   "240" => collect(rand(Complex{Float16}, rand(4:24))), "241" => collect(rand(Complex{Float32}, rand(4:24))), "242" => collect(rand(Complex{Float64}, rand(4:24)))
   )
+
+
+  NOOF = "
+  HI ITS CLOVER LOL﻿
+          ,-'-,  `---..
+         /             \\
+         =,             .
+  ______<3.  ` ,+,     ,\\`
+ ( \\  + `-”.` .; `     `.\\
+ (_/   \\    | ((         ) \\
+  |_ ;  \"    \\   (        ,’ |\\
+  \\    ,- '💦 (,\\_____,’   / “\\
+   \\__---+ }._)              |\\
+   / _\\__💧”)/                  +
+  ( /    💧” \\                  ++_
+   \\)    ,“  |)                ++  ++
+   💧     “💧  (                 *    +***
+"
 
 # All functions used by tests are here
 Lx(T::SeisData) = [length(T.x[i]) for i=1:T.n]
@@ -194,5 +212,48 @@ function wait_on_data!(S::SeisData; tmax::Real=60.0)
   else
     @warn("No data. Is the server down?")
   end
+  return nothing
+end
+
+function naive_filt!(C::SeisChannel;
+  fl::Float64=1.0,
+  fh::Float64=15.0,
+  np::Int=4,
+  rp::Int=10,
+  rs::Int=30,
+  rt::String="Bandpass",
+  dm::String="Butterworth"
+  )
+
+  T = eltype(C.x)
+  fe = 0.5 * C.fs
+  low = T(fl / fe)
+  high = T(fh / fe)
+
+  # response type
+  if rt == "Highpass"
+    ff = Highpass(fh, fs=fs)
+  elseif rt == "Lowpass"
+    ff = Lowpass(fl, fs=fs)
+  else
+    ff = getfield(DSP.Filters, Symbol(rt))(fl, fh, fs=fs)
+  end
+
+  # design method
+  if dm == "Elliptic"
+    zp = Elliptic(np, rp, rs)
+  elseif dm == "Chebyshev1"
+    zp = Chebyshev1(np, rp)
+  elseif dm == "Chebyshev2"
+    zp = Chebyshev2(np, rs)
+  else
+    zp = Butterworth(np)
+  end
+
+  # polynomial ratio
+  pr = convert(PolynomialRatio, digitalfilter(ff, zp))
+
+  # zero-phase filter
+  C.x[:] = filtfilt(pr, C.x)
   return nothing
 end

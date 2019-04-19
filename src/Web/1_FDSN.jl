@@ -224,7 +224,7 @@ function FDSNget!(U::SeisData, chans::Union{String,Array{String,1},Array{String,
       S += SeisChannel(id = string("XX..", n_badreq),
                        misc = Dict{String,Any}( "url" => URL,
                                                 "body" => QUERY,
-                                                "data" => String(take!(io)) ) )
+                                                "data" => readlines(IOBuffer(R)) ) )
     end
 
     dt0 += Day(nd)
@@ -315,8 +315,9 @@ function FDSNevq(ot::String;
       # R = request("GET", url, webhdr(), readtimeout=to)
       (R, parsable) = get_HTTP_req(url, req_info_str, to)
       if parsable
-          v > 1 && println(stdout, "REQUEST BODY:\n", String(R))
-          (id, ot_tmp, loc, mm, msc) = FDSN_event_xml(String(R))
+          str_req = String(R)
+          v > 1 && println(stdout, "REQUEST BODY:\n", str_req)
+          (id, ot_tmp, loc, mm, msc) = FDSN_event_xml(str_req)
           for i = 1:length(id)
               eh = SeisHdr(id=id[i], ot=ot_tmp[i], loc=loc[:,i], mag=(mm[i], msc[i]), src=url)
               push!(catalog, eh)

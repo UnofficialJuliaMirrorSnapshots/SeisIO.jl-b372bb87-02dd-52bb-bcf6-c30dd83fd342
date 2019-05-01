@@ -66,7 +66,7 @@ mutable struct SeisData
       S.notes[i]  = Array{String,1}(undef,0)                # notes
       S.misc[i]   = Dict{String,Any}()                      # misc
       S.t[i]      = Array{Int64,2}(undef,0,2)               # t
-      S.x[i]      = Array{Float64,1}(undef,0)               # x
+      S.x[i]      = Array{Float32,1}(undef,0)               # x
       S.loc[i]    = Array{Float64,1}(undef,0)               # loc
       S.resp[i]   = Array{Complex{Float64},2}(undef,0,2)    # resp
     end
@@ -119,8 +119,16 @@ setindex!(S::SeisData, U::SeisData, J::UnitRange) = setindex!(S, U, collect(J))
 
 isempty(S::SeisData) = (S.n == 0) ? true : minimum([isempty(getfield(S,f)) for f in datafields])
 
-isequal(S::SeisData, U::SeisData) = minimum([hash(getfield(S,i))==hash(getfield(U,i)) for i in datafields]::Array{Bool,1})
-==(S::SeisData, U::SeisData) = isequal(S,U)::Bool
+function isequal(S::SeisData, U::SeisData)
+  q::Bool = true
+  for i in datafields
+    if i != :notes
+      q = min(q, hash(getfield(S,i))==hash(getfield(U,i)))
+    end
+  end
+  return q
+end
+==(S::SeisData, U::SeisData) = isequal(S,U)
 
 function sizeof(S::SeisData)
   s = sizeof(S.c) + 8

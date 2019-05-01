@@ -12,17 +12,38 @@ S = readmseed(string(path, "/SampleFiles/test.mseed"), v=0)
 @test isequal(string(u2d(S.t[1][1,2]*1.0e-6)), "2003-05-29T02:13:22.043")
 @test ≈(S.x[1][1:5], [ 2787, 2776, 2774, 2780, 2783 ])
 
+# Test breaks if memory-resident SeedVol structure SEED is not reset
+S1 = readmseed(string(path, "/SampleFiles/test.mseed"), v=0)
+@test S == S1
+
+mseed_vals = readdlm("DataFormats/test_mseed_vals.txt", ',', comments=true, comment_char='#')
+seedvals = Dict{String,Any}()
+ntest = size(mseed_vals,1)
+for i = 1:ntest
+  seedvals[mseed_vals[i,1]] = Float32.(mseed_vals[i, 2:end])
+end
+
 if safe_isdir(path*"/SampleFiles/Restricted")
-  printstyled("    file reads with many time gaps\n", color=:light_green)
+  printstyled("    mseed test files (time gaps, blockette types)\n", color=:light_green)
 
   open("runtests.log", "a") do out
     redirect_stdout(out) do
+      mseed_support()
       files = ls(path*"/SampleFiles/Restricted/*mseed")
       for f in files
         println(stdout, "attempting to read ", f)
         S = SeisData()
         readmseed!(S, f, v=3)
         @test isempty(S) == false
+
+        # Test that our encoders return the expected values
+        (tmp, fname) = splitdir(f)
+        if haskey(seedvals, fname)
+          x = get(seedvals, :fname, Float32[])
+          nx = lastindex(x)
+          y = getindex(getfield(S, :x), 1)[1:nx]
+          @test isapprox(x,y)
+        end
 
         if occursin("text-encoded", f)
           @test haskey(S.misc[1], "seed_ascii") == true
@@ -58,6 +79,7 @@ if safe_isdir(path*"/SampleFiles/Restricted")
           end
           #[round(u2d(i*1.0e-6), Second) for i in t]
           Δ = [abs(.001*(W[i]-Y[i]).value)*C.fs for i=1:length(Y)]
+          println(Δ)
           @test maximum(Δ) < 1.0
         else
           @test isempty(S) == false

@@ -42,7 +42,7 @@ function irisws(cha::String, d0::String, d1::String;
         Ch.name = deepcopy(Ch.id)
       end
     elseif fmt == "miniseed"
-      parsemseed!(S, IOBuffer(R), v)
+      parsemseed!(S, IOBuffer(R), v, KW.nx_add, KW.nx_add)
       Ch = S[1]
       if isempty(Ch.loc)
         Ch.loc = zeros(Float64,5)
@@ -126,7 +126,7 @@ function get_pha(Δ::Float64, z::Float64;
 
   url = string("http://service.iris.edu/irisws/traveltime/1/query?", "distdeg=", Δ, "&evdepth=", z, pq, "&model=", model, "&mintimeonly=true&noheader=true")
   v > 0 && println(stdout, "url = ", url)
-  req_info_str = string("\nIRIS travel time request:\nΔ = ", Δ, "\nDepth = ", z, "\nPhases = ", pq, "\nmodel =", model)
+  req_info_str = string("\nIRIS travel time request:\nΔ = ", Δ, "\nDepth = ", z, "\nPhases = ", pq, "\nmodel = ", model)
   (R, parsable) = get_HTTP_req(url, req_info_str, to)
 
   if parsable

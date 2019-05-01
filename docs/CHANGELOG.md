@@ -1,3 +1,37 @@
+### 2019-04-23
+* Performance improvements (speed, memory)
+  + `endtime`, `j2md`, `md2j` should be noticeably faster and more efficient
+* SEED improvements:
+  + `readmseed`: significant code optimization.
+    - File read times have improved by roughly a factor of 5.
+    - The number of allocations to read a large SEED file has been reduced by 5
+        orders of magnitude.
+    - Memory overhead has been reduced from >500% to <10%, though some rare
+      data encodings can use slightly more memory.
+  + `readmseed` memory allocation is now optimized for large files. Memory
+  allocation can be improved for smaller files with two new keywords:
+    - `readmseed(..., nx_new=N)` allocates `N` samples to `:x` for a new
+    channel. After data read, unused memory is freed by resizing arrays in `:x`.
+    (Default: 86400000)
+    - `readmseed(..., nx_add=N)` increases `S.x[i]` by at least `N` samples when
+    new data are added to any channel `i`. (Default: 360000)
+    - SEED reads and downloads now create Float32 data arrays by default.
+* Consistency changes:
+  + `SeisData(n)` now initializes `n` arrays of Float32 precision in `:x`, rather than Float64
+
+### 2019-04-19
+* Information logged to `:notes` has been standardized.
+  + Format: `time: function, options/KWs, human-readable description`
+  + Fields in an automatic note are comma-separated, with the function name
+  always in the first field and human-readable information always in the last.
+  + All processing functions should once again log faithfully to `:notes`.
+* Added `filtfilt!` methods for zero-phase filtering of data in SeisData,
+  SeisChannel, and SeisEvent objects.
+* Equality (`==`) in SeisIO parametric types no longer checks for equality of
+  their respective `:notes` fields.
+* Extended `note!` to lists of channels in SeisData objects.
+* Added information for potential contributors.
+
 ### 2019-04-15
 * Added `readgeocsv` for two-column GeoCSV ASCII time-series data
 * `taper!` has replaced `autotap!`

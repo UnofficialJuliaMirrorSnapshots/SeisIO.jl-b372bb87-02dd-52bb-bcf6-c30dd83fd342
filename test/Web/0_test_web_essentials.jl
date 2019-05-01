@@ -32,6 +32,11 @@ url = "http://service.iris.edu/irisws/timeseries/1/query?net=DE&sta=NENA&loc=99&
 @test startswith(String(req), "HTTP.Messages.Response")
 @test parsable == false
 
+(req, parsable) = get_http_post(url, NOOF, to, status_exception=false)
+@test typeof(req) == Array{UInt8,1}
+@test startswith(String(req), "HTTP.Messages.Response")
+@test parsable == false
+
 (req, parsable) = get_http_post(url, NOOF, to, status_exception=true)
 @test typeof(req) == Array{UInt8,1}
 @test startswith(String(req), "HTTP.Messages.Response")
@@ -102,3 +107,7 @@ end
 @test ≈(RESP[2], r1)
 @test ≈(RESP[end-1], r2)
 @test ≈(RESP[end], r2)
+
+chanspec()
+chanspec()
+chanspec()

@@ -1,5 +1,5 @@
 # Define default values for keyword arguments.
-struct SLDefs
+mutable struct SLDefs
   port::Int64
   gap::Int64
   kai::Int64
@@ -8,7 +8,7 @@ struct SLDefs
   x_on_err::Bool
 end
 
-struct FiltDefs
+mutable struct FiltDefs
   fl::Float64
   fh::Float64
   np::Int64
@@ -18,11 +18,12 @@ struct FiltDefs
   dm::String
 end
 
-struct KWDefs
+mutable struct KWDefs
   SL::SLDefs
   Filt::FiltDefs
   evw::Array{Real,1}
   fmt::String
+  full::Bool
   mag::Array{Float64,1}
   nd::Int64
   nev::Int64
@@ -54,6 +55,7 @@ keyword isn't specified.
 | evw      | [600,      | Array{Real,1}      | search for events in window    |
 |          |  600]      |                    |   (ot-|t1|, ot+|t2|)           |
 | fmt      | "miniseed" | String             | request data format            |
+| full     | false      | Bool               | read full headers?             |
 | mag      | [6.0, 9.9] | Array{Float64,1}   | search magitude range          |
 | nd       | 1          | Int64              | number of days per subrequest  |
 | nev      | 1          | Int64              | number of events per query     |
@@ -112,7 +114,6 @@ SeisIO.KW.Filt: Defaults parameters for time-series filtering.
 
 """
 const KW = KWDefs(
-
            SLDefs(18000,    # port::Int64
                    3600,    # gap::Int64
                     600,    # kai::Int64
@@ -130,6 +131,7 @@ const KW = KWDefs(
 
                [600, 600],  # evw::Real
                "miniseed",  # fmt::String
+                    false,  # full::Bool
         Float64[6.0, 9.9],  # mag::Array{Float64,1}
                         1,  # nd::Int64
                         1,  # nev::Int64

@@ -1,6 +1,7 @@
 import Base:in, +, -, *, convert, isempty, isequal, length, push!, sizeof
 export SeisChannel
 
+@doc (@doc SeisData)
 mutable struct SeisChannel
   name  ::String
   id    ::String
@@ -122,4 +123,5 @@ function sizeof(Ch::SeisChannel)
   return s
 end
 
+@doc (@doc namestrip)
 namestrip!(C::SeisChannel) = namestrip(C.name)

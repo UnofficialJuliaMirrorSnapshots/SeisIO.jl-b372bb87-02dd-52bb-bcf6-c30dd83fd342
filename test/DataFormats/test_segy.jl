@@ -9,8 +9,9 @@ SEG = readsegy(segy_file_1, passcal=true, full=true)
 printstyled("      header integrity\n", color=:light_green)
 
 SEG = readsegy(segy_file_1, passcal=true, full=true)
-@test 1/SEG.gain[1] == SEG.misc[1]["scale_fac"] == 4.80184e+08
+@test SEG.gain[1] == SEG.misc[1]["scale_fac"] == 4.80184e+08
 @test SEG.fs[1] == 100.0 == 1.0e6 / SEG.misc[1]["delta"]
+@test lastindex(SEG.x[1]) == 8640047
 @test SEG.misc[1]["trace_seq_line"] == 1
 @test SEG.misc[1]["trace_seq_file"] == 1
 @test SEG.misc[1]["event_no"] == 1
@@ -36,9 +37,9 @@ SEG = readsegy(segy_file_1, passcal=true, full=true)
 @test SEG.misc[1]["trigms"] == 0
 @test SEG.misc[1]["data_form"] == 1
 @test SEG.misc[1]["inst_no"] == 0x0000
-@test SEG.misc[1]["station_name"] == "TDH"
-@test SEG.misc[1]["sensor_serial"] == ""
-@test SEG.misc[1]["channel_name"] == "EHZ"
+@test strip(SEG.misc[1]["sensor_serial"]) == ""
+@test strip(SEG.misc[1]["station_name"]) == "TDH"
+@test strip(SEG.misc[1]["channel_name"]) == "EHZ"
 
 # Location
 printstyled("      sensor position\n", color=:light_green)
@@ -64,6 +65,15 @@ open("runtests.log", "a") do out
     segyhdr(segy_file_1, passcal=true)
   end
 end
+
+printstyled("    wildcard support\n", color=:light_green)
+segfpat = joinpath(path, "SampleFiles/*PASSCAL*segy")
+SEG = readsegy(segfpat, passcal=true, full=true)
+@test S.n == 1
+@test Float64(SEG.misc[1]["max"]) == maximum(SEG.x[1]) == 2047.0
+@test Float64(SEG.misc[1]["min"]) == minimum(SEG.x[1]) == -2048.0
+@test ≈(SEG.x[1][1:10], [47.0, 46.0, 45.0, 44.0, 51.0, 52.0, 57.0, 59.0, 40.0, 34.0])
+@test length(SEG.x[1]) == SEG.misc[1]["num_samps"] == 8640047
 
 if safe_isfile(segy_file_2)
  printstyled("    SEG Y rev 1\n", color=:light_green)

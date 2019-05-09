@@ -3,7 +3,7 @@
 # versions of libmseed, which reads with no issues
 printstyled("  mini-SEED file read\n", color=:light_green)
 
-@test_throws ErrorException readmseed(string(path, "/SampleFiles/nonexist.mseed"), v=0)
+@test_throws ErrorException readmseed(string(path, "/SampleFiles/one_day.sac"))
 
 S = readmseed(string(path, "/SampleFiles/test.mseed"), v=0)
 @test isequal(S.id[1], "NL.HGN.00.BHZ")
@@ -12,9 +12,13 @@ S = readmseed(string(path, "/SampleFiles/test.mseed"), v=0)
 @test isequal(string(u2d(S.t[1][1,2]*1.0e-6)), "2003-05-29T02:13:22.043")
 @test ≈(S.x[1][1:5], [ 2787, 2776, 2774, 2780, 2783 ])
 
-# Test breaks if memory-resident SeedVol structure SEED is not reset
+# Test breaks if memory-resident SeisIOBuf structure SEED is not reset
 S1 = readmseed(string(path, "/SampleFiles/test.mseed"), v=0)
-@test S == S1
+if Sys.iswindows() == false
+  S2 = readmseed(string(path, "/SampleFiles/t*.mseed"), v=0)
+  @test S == S1 == S2
+end
+
 
 mseed_vals = readdlm("DataFormats/test_mseed_vals.txt", ',', comments=true, comment_char='#')
 seedvals = Dict{String,Any}()
@@ -28,7 +32,7 @@ if safe_isdir(path*"/SampleFiles/Restricted")
 
   open("runtests.log", "a") do out
     redirect_stdout(out) do
-      mseed_support()
+      seed_support()
       files = ls(path*"/SampleFiles/Restricted/*mseed")
       for f in files
         println(stdout, "attempting to read ", f)
@@ -74,12 +78,13 @@ if safe_isdir(path*"/SampleFiles/Restricted")
 
           Y = Array{DateTime,1}(undef,0)
           for f in fnames
-            seis = readsac(f)
+            seis = readsac(f)[1]
             push!(Y, u2d(seis.t[1,2]*1.0e-6))
           end
           #[round(u2d(i*1.0e-6), Second) for i in t]
+          # println("W = ", string.(W))
+          # println("Y = ", string.(Y))
           Δ = [abs(.001*(W[i]-Y[i]).value)*C.fs for i=1:length(Y)]
-          println(Δ)
           @test maximum(Δ) < 1.0
         else
           @test isempty(S) == false

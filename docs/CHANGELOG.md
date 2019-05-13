@@ -1,3 +1,61 @@
+### 2019-05-10
+**Typeageddon!** A number of changes have been made to SeisData object
+architectures, with two goals: (1) allow several standardized formats for fields
+with no universal convention; (2) improve the user experience.
+* An abstract Type, GphysData, is now the supertype of SeisData
+* An abstract Type, GphysChannel, is now the supertype of SeisChannel
+* In SeisEvent objects, `:data` is a new Type, EventTraceData (<: GphysData),
+  with additional fields for event-specific information:
+  + `az`    Azimuth from event
+  + `baz`   Backazimuth to event
+  + `dist`  Source-receiver distance
+  + `pha`   Phase catalog, a dictionary of SeisPha objects, which have fields
+      - `d`   Distance
+      - `tt`  Travel Time
+      - `rp`  Ray Parameter
+      - `ta`  Takeoff Angle
+      - `ia`  Incidence Angle
+      - `pol` Polarity
+* In SeisData objects:
+  + `:loc` now contains an abstract type, InstrumentPosition, whose subtypes
+    standardize location formats. A typical SeisData object uses type GeoLoc
+    locations, with fields
+    - `datum`
+    - `lat` Latitude
+    - `lon` Longitude
+    - `el`  Instrument elevation
+    - `dep` Instrument depth (sometimes tracked independently of elevation, for reasons)
+    - `az`  Azimuth, clocwise from North
+    - `inc` Incidence, measured downward from verticla
+  + `:resp` is now an abstract type, InstrumentResponse, whose subtypes
+    standardize response formats. A typical SeisData object has type PZResp
+    responses with fields
+    - `c` Damping constant
+    - `p` Complex poles
+    - `z` Complex zeros
+* SeisHdr changes:
+  + The redundant fields `:pax` and `:np` have been consolidated into `:axes`,
+    which holds 3-Tuples of Float64s.
+  + The moment tensor field `:mt` is no longer filled in a new SeisHdr.
+  + The SeisHdr `:loc` field is now a substructure with fields for `datum`,
+    `lat`, `lon`, and `dep`.
+* Bugs/Consistency
+  + `sizeof(S)` now better gauges the true sizes of custom objects.
+  + `isempty` is now well-defined for SeisChannel and SeisHdr objects.
+  + Fixed incremental subrequest behavior for long `get_data` requests.
+  + Eliminated the possibility of a (very rare, but previously possible)
+    duplicate sample error in long `get_data` requests.
+  + `get_data` no longer treats regional searches and instrument selectors
+    as mutually exclusive.
+  + keyword `nd` (number of days / subrequest) is now type `Real` (was: `Int`).
+  + shortened keyword `xml_file` to `xf` because I'm *that* lazy about typing.
+  + `writesac` stores channel IDs correctly again.
+  + `writesac` now sets begin time (SAC `b`) from SeisChannel/SeisData `:t`,
+    rather than truncating to 0.0; thus, channel times of data saved to SAC
+    should now be identical to channel times of data saved to SeisIO format.
+
+# SeisIO v0.2.0 Release
+
 ### 2019-05-04
 Release candidate
 * Added a keyword to `SeisIO.KW` for Boolean option `full` in data readers.

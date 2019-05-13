@@ -15,7 +15,7 @@ Append `s` to channel `i` of `S` and time stamp.
 
 As above for the first channel in `S` whose id is an exact match to `id`.
 """
-note!(S::SeisData, i::Int64, s::String) = push!(S.notes[i], tnote(s))
+note!(S::T, i::Int64, s::String) where {T<:GphysData} = push!(S.notes[i], tnote(s))
 
 
 """
@@ -23,7 +23,7 @@ note!(S::SeisData, i::Int64, s::String) = push!(S.notes[i], tnote(s))
 
 Append `s` to `S.notes` and time stamp. If `txt` contains a channel name or ID, only the channel mentioned is annotated; otherwise, all channels are annotated.
 """
-function note!(S::SeisData, s::String)
+function note!(S::T, s::String) where {T<:GphysData}
     J = [occursin(i, s) for i in S.name]
     K = [occursin(i, s) for i in S.id]
     j = findall(max.(J,K) .== true)
@@ -37,14 +37,14 @@ function note!(S::SeisData, s::String)
   return nothing
 end
 
-function note!(S::SeisData, id::String, s::String)
+function note!(S::T, id::String, s::String) where {T<:GphysData}
   i = findid(id, S)
   (i == 0) && error(string("id = ", id, " not found in S!"))
   push!(S.notes[i], tnote(s))
   return nothing
 end
 
-function note!(S::SeisData, chans::Array{Int64,1}, s::String)
+function note!(S::T, chans::Array{Int64,1}, s::String) where {T<:GphysData}
   for c in chans
     note!(S, c, s)
   end
@@ -68,7 +68,7 @@ Clear all notes from channel `i` of `S` and leaves a note about this.
 
 As above for the first channel in `S` whose id is an exact match to `id`.
 """
-function clear_notes!(S::SeisData)
+function clear_notes!(S::T) where {T<:GphysData}
   cstr = tnote("notes cleared.")
   for i = 1:S.n
     empty!(S.notes[i])
@@ -77,13 +77,13 @@ function clear_notes!(S::SeisData)
   return nothing
 end
 
-function clear_notes!(S::SeisData, i::Int64)
+function clear_notes!(S::T, i::Int64) where {T<:GphysData}
   empty!(S.notes[i])
   push!(S.notes[i], tnote("notes cleared."))
   return nothing
 end
 
-function clear_notes!(S::SeisData, id::String)
+function clear_notes!(S::T, id::String) where {T<:GphysData}
   i = findid(id, S)
   (i == 0) && error(string("id = ", id, " not found in S!"))
   empty!(S.notes[i])

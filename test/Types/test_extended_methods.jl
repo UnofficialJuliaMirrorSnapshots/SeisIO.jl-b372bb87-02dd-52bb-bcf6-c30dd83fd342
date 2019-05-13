@@ -1,4 +1,4 @@
-printstyled(stdout,"  Extended methods\n", color=:light_green)
+printstyled(stdout,"  extended methods\n", color=:light_green)
 
 printstyled(stdout,"    getindex\n", color=:light_green)
 (S,T) = mktestseis()
@@ -16,6 +16,7 @@ test_fields_preserved(D,S,2,i_targ+1)
 printstyled(stdout,"    setindex!\n", color=:light_green)
 A = SeisData(3)
 setindex!(A, C, 3)
+test_fields_preserved(C, A, 3)
 A[1:2]=D
 test_fields_preserved(A, S, 2, i_targ+1)
 test_fields_preserved(C, S, 3)
@@ -32,15 +33,11 @@ printstyled(stdout,"    isempty\n", color=:light_green)
 D = SeisData()
 @test isempty(D)
 
-printstyled(stdout,"    equality\n", color=:light_green)
-@test S==S
-
 printstyled(stdout,"    append!\n", color=:light_green)
 (S,T) = mktestseis()
 append!(S, T)
 sizetest(S, 9)
 
-printstyled(stdout,"    deleteat!, delete! (by channel index)\n", color=:light_green)
 C = deepcopy(S[4])
 deleteat!(S, 4)
 sizetest(S, 8)
@@ -55,7 +52,6 @@ nt = 6
 @test length(findall(S.name.==C.name[1])).*length(findall(S.id.==C.id[1])) == 0
 @test length(findall(S.name.==C.name[2])).*length(findall(S.id.==C.id[2])) == 1
 
-printstyled(stdout,"    deleteat!, delete! (by id match)\n", color=:light_green)
 s = "CC.LON..BHZ"
 delete!(S, s)
 sizetest(S, 5)
@@ -64,8 +60,6 @@ s = r"EH"
 # @test_throws BoundsError S - s
 delete!(S, s, exact=false)
 sizetest(S, 2)
-
-printstyled(stdout,"    operators \"+\" & \"-\"\n", color=:light_green)
 
 # untested methods in SeisData
 for i = 1:5
@@ -94,15 +88,11 @@ sizetest(T,4)
 sizetest(U,3)
 
 (S,T) = mktestseis()
-@test (S + T - T) == S
-
-(S,T) = mktestseis()
 U = deepcopy(S)
 deleteat!(U, 1:3)
 @test (S - [1,2,3]) == U
 sizetest(S,5)
 
-printstyled(stdout,"       SeisData arithmetic\n", color=:light_green)
 (S,T) = mktestseis()
 @test in("UW.SEP..EHZ",S)
 U = S[3:S.n]
@@ -130,7 +120,7 @@ sizetest(T, 1)
 @test findid(V.id[1], T.id) == 0
 @test findid(V.id[2], T.id) == 0
 @test findid(V.id[3], T.id) == 0
-sort!(V)
+V = sort(V)
 
 deleteat!(X,1)
 @test findid(V,X) == [2,3,1]
@@ -140,8 +130,60 @@ Y = sort(X)
 # added 2019-02-23
 S = SeisData(randSeisData(5), SeisChannel(), SeisChannel(),
     SeisChannel(id="UW.SEP..EHZ", name="Darth Exploded",
-    loc=[46.1967, -122.1875, 1440, 0.0, 0.0], x=rand(1024)))
+    loc=GeoLoc(lat=46.1967, lon=-122.1875, el=1440.0), x=rand(1024)))
 prune!(S)
 @test (S.n == 6)
 J = findchan("EHZ",S)
 @test (6 in J)
+
+printstyled(stdout,"    show\n", color=:light_green)
+S = breaking_seis()
+T = randSeisData(1)
+
+
+redirect_stdout(out) do
+  show(SeisChannel())
+  show(SeisData())
+  show(SeisHdr())
+  show(SeisEvent())
+  show(EventTraceData())
+  show(EventChannel())
+
+  show(randSeisChannel())
+  show(S)
+  show(T)
+  show(randSeisHdr())
+  show(randSeisEvent())
+
+  summary(randSeisChannel())
+  summary(randSeisData())
+  summary(randSeisEvent())
+  summary(randSeisHdr())
+
+  # invoke help-only functions
+  @test seed_support() == nothing
+  @test chanspec() == nothing
+  @test mseed_support() == nothing
+  @test timespec() == nothing
+end
+
+printstyled("  SeisChannel methods\n", color=:light_green)
+
+id = "UW.SEP..EHZ"
+name = "Darth Exploded"
+
+Ch = randSeisChannel()
+Ch.id = id
+Ch.name = name
+S = SeisData(Ch)
+
+@test in(id, Ch) == true
+@test isempty(Ch) == false
+@test convert(SeisData, Ch) == SeisData(Ch)
+@test findid(Ch, S) == 1
+@test sizeof(Ch) > 0
+@test lastindex(S) == 1
+
+printstyled("  convert\n", color=:light_green)
+TD = convert(EventTraceData, EventChannel())
+sz = sizeof(TD)

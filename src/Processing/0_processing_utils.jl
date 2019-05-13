@@ -1,28 +1,4 @@
-function autotuk!(x::Array{T,1}, v::Array{Int64,1}, u::Int) where T<:Real
-  g = findall(diff(v) .> 1)
-  L = length(g)
-  y = Array{T,1}(undef,0)
-  if L > 0
-    pushfirst!(g, 0)
-    push!(g, length(x))
-    for i = 1:length(g)-1
-      j = g[i]+1
-      k = g[i+1]
-      N = k-j+1
-      resize!(y, N)
-      unsafe_copyto!(y, 1, x, j, N)
-      μ = T(mean(y))
-      w = T.(tukey(N, min(u/N, 0.95)))
-      broadcast!(-, y, y, μ)
-      broadcast!(*, y, y, w)
-      broadcast!(+, y, y, μ)
-      unsafe_copyto!(x, j, y, 1, N)
-    end
-  end
-  return x
-end
-
-function gapfill!(x::Array{T,1}, t::Array{Int64,2}, fs::Float64; m=true::Bool, w=true::Bool) where T<: Real
+function gapfill!(x::Array{T,1}, t::Array{Int64,2}, fs::Float64; m::Bool=true) where T<: Real
   (fs == 0.0 || isempty(x)) && (return x)
   mx::T = m ? mean(x[isnan.(x).==false]) : NaN
   u = round(Int64, max(20, 0.2*fs))
@@ -35,18 +11,21 @@ function gapfill!(x::Array{T,1}, t::Array{Int64,2}, fs::Float64; m=true::Bool, w
     k = t[i,1]
     N = k-j
     splice!(x, k:k-1, mx.*ones(T, g))
+  end
+  return nothing
+end
 
-    # Window if selected
-    if w
-      if N >= u
-        x[j+1:k] .*= tukey(N, u/N)
-      else
-        @warn(string("segment ", i, " too short; x[", j+1, ":", k, "] replaced with mean(x)."))
-        x[j+1:k] .= mx
-      end
+# replace NaNs with the mean
+function nanfill!(x::Array{T,1}) where T<: Real
+  J = findall(isnan.(x))
+  if !isempty(J)
+    if length(J) == length(x)
+      fill!(x, zero(T))
+    else
+      x[J] .= T(mean(findall(isnan.(x).==false)))
     end
   end
-  return x
+  return nothing
 end
 
 # Faster than Polynomials.jl with less memory allocation + single-point type

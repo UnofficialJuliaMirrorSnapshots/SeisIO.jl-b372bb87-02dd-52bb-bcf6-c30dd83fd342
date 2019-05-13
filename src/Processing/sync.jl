@@ -19,8 +19,8 @@ function get_sync_inds(t::AbstractArray{Int64,1}, Ω::Bool, t₀::Int64, t₁::I
   end
 end
 
-"""
-sync!(S::SeisData)
+@doc """
+sync!(S::GphysData)
 
 Synchronize the start times of all data in S to begin at or after the last
 start time in S.
@@ -46,8 +46,8 @@ are filled with the mean; this isn't possible with irregularly-sampled data.
 * numeric, datetime, and non-reserved strings are treated as for `-s`.
 
 Related functions: time, Dates.DateTime, parsetimewin
-"""
-function sync!(S::SeisData;
+""" sync!
+function sync!(S::GphysData;
                 s="last"::Union{String,DateTime},
                 t="none"::Union{String,DateTime},
                 v::Int64=KW.v,
@@ -114,9 +114,9 @@ function sync!(S::SeisData;
       dflag[i] = true
       continue
     elseif do_end
-      note!(S, i, @sprintf("sync! removed %i samples outside range %s--%s", Lj, sstr, tstr))
+      note!(S, i, @sprintf("sync!, s = %s, t = %s, removed %i samples (out of time range) from :x", sstr, tstr, Lj))
     else
-      note!(S, i, @sprintf("sync! removed %i samples before %s", Lj, sstr))
+      note!(S, i, @sprintf("sync! s = %s, t = none, removed %i samples (out of time range) from :x", sstr, Lj))
     end
     ti = collect(1:Lt)
     deleteat!(S.x[i], j)
@@ -127,6 +127,9 @@ function sync!(S::SeisData;
   # Loop over timeseries data
   for i = 1:S.n
     if irr[i] == false
+      sync_str = Array{String,1}(undef,0)
+      desc_str = ""
+
       # truncate X to values within bounds
       t = t_expand(S.t[i], S.fs[i])
       j = get_sync_inds(t, do_end, t_start, t_end)
@@ -138,6 +141,10 @@ function sync!(S::SeisData;
       if length(S.x[i]) == 0
         dflag[i] = true
         continue
+      end
+
+      if !isempty(j)
+        push!(sync_str, string("deleted ", length(j), " samples from :x"))
       end
 
       S.t[i] = t_collapse(t, S.fs[i])
@@ -155,7 +162,7 @@ function sync!(S::SeisData;
         # corrected 2019-02-28
         S.t[i][1,2] = S.t[i][1,2] - ni*dtμ
 
-        note!(S, i, string("sync! prepended ", ni, " values."))
+        push!(sync_str, string("prepended ", ni, " samples to :x."))
       end
 
       # append points to time series data that end early
@@ -166,31 +173,44 @@ function sync!(S::SeisData;
         if (t_end - end_times[i]) ≥ dtμ
           ni = div(t_end-end_times[i], dtμ)
           append!(S.x[i], ones(T,ni).*μ_x)
-          note!(S, i, string("sync! appended ", ni, " values."))
+
+          push!(sync_str, string("appended ", ni, " samples to :x."))
         end
 
         # Correct for length aberration if necessary
         S.t[i][end,1] = length(S.x[i])
-        note!(S, i, string("sync! synchronized times to ", sstr, " -- ", tstr))
+
+        desc_str = string("sync!, s = ", sstr, ", t = ", tstr)
       else
-        note!(S, i, string("sync! synchronized start time to ", sstr, "."))
+        desc_str = string("sync!, s = ", sstr, ", t = none")
       end
+
+      if length(sync_str) > 0
+        desc_str *= string(", ", join(sync_str, ";"))
+      end
+      note!(S, i, desc_str)
     end
   end
   del_flagged!(S, dflag, "length 0 after sync")
   return nothing
 end
 
-"""
-    T = sync(S)
+sync!(V::SeisEvent;
+  s="last"::Union{String,DateTime},
+  t="none"::Union{String,DateTime},
+  v::Int64=KW.v ) = sync!(V.data, s=s, t=t, v=v)
 
-Synchronize time ranges of S and pad data gaps.
+function sync!(C::SeisChannel;
+                s::DateTime,
+                t="none"::Union{String,DateTime},
+                v::Int64=KW.v )
+  S = SeisData(C)
+  sync!(S, s=s, t=t, v=v)
+  return nothing
+end
 
-    T = sync(S, rs=true)
-
-Synchronize S and downsample data to the lowest non-null interval in S.fs.
-"""
-function sync( S::SeisData;
+@doc (@doc sync!)
+function sync(S::GphysData;
                 s="last"::Union{String,DateTime},
                 t="none"::Union{String,DateTime},
                 v::Int64=KW.v )
@@ -198,4 +218,25 @@ function sync( S::SeisData;
   T = deepcopy(S)
   sync!(T, s=s, t=t, v=v)
   return T
+end
+
+function sync(V::SeisEvent;
+                s="last"::Union{String,DateTime},
+                t="none"::Union{String,DateTime},
+                v::Int64=KW.v )
+
+  W = deepcopy(V)
+  sync!(W.data, s=s, t=t, v=v)
+  return W
+end
+
+function sync(C::SeisChannel;
+                s::DateTime,
+                t="none"::Union{String,DateTime},
+                v::Int64=KW.v )
+
+  U = deepcopy(C)
+  S = SeisData(U)
+  sync!(S, s=s, t=t, v=v)
+  return S[1]
 end

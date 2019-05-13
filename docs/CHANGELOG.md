@@ -1,3 +1,171 @@
+### 2019-05-10
+**Typeageddon!** A number of changes have been made to SeisData object
+architectures, with two goals: (1) allow several standardized formats for fields
+with no universal convention; (2) improve the user experience.
+* An abstract Type, GphysData, is now the supertype of SeisData
+* An abstract Type, GphysChannel, is now the supertype of SeisChannel
+* In SeisEvent objects, `:data` is a new Type, EventTraceData (<: GphysData),
+  with additional fields for event-specific information:
+  + `az`    Azimuth from event
+  + `baz`   Backazimuth to event
+  + `dist`  Source-receiver distance
+  + `pha`   Phase catalog, a dictionary of SeisPha objects, which have fields
+      - `d`   Distance
+      - `tt`  Travel Time
+      - `rp`  Ray Parameter
+      - `ta`  Takeoff Angle
+      - `ia`  Incidence Angle
+      - `pol` Polarity
+* In SeisData objects:
+  + `:loc` now contains an abstract type, InstrumentPosition, whose subtypes
+    standardize location formats. A typical SeisData object uses type GeoLoc
+    locations, with fields
+    - `datum`
+    - `lat` Latitude
+    - `lon` Longitude
+    - `el`  Instrument elevation
+    - `dep` Instrument depth (sometimes tracked independently of elevation, for reasons)
+    - `az`  Azimuth, clocwise from North
+    - `inc` Incidence, measured downward from verticla
+  + `:resp` is now an abstract type, InstrumentResponse, whose subtypes
+    standardize response formats. A typical SeisData object has type PZResp
+    responses with fields
+    - `c` Damping constant
+    - `p` Complex poles
+    - `z` Complex zeros
+* Bugs/Consistency
+  + Fixed incremental subrequest behavior for long `get_data` requests.
+  + Eliminated the possibility of a (very rare, but previously possible)
+    duplicate sample error in long `get_data` requests.
+  + `get_data` no longer treats regional searches and instrument selectors
+    as mutually exclusive.
+  + keyword `nd` (number of days / subrequest) is now type `Real` (was: `Int`).
+  + shortened keyword `xml_file` to `xf` because I'm *that* lazy about typing.
+  + `writesac` stores channel IDs correctly again.
+  + `writesac` now sets begin time (SAC `b`) based on `:t`, rather than
+    truncating begin time to 0.0.
+
+# SeisIO v0.2.0 Release
+
+### 2019-05-04
+Release candidate
+* Added a keyword to `SeisIO.KW` for Boolean option `full` in data readers.
+* Added help functions `?seed_support` and `?timespec`.
+* All processing methods have been extended to SeisChannel, SeisData, and
+SeisEvent objects; in the latter case, they affect the `:data` field.
+  + Exception: `merge`
+    - Can't be used on SeisChannel or SeisEvent objects; that makes no sense.
+    - `mseis!` can still merge SeisEvent and SeisChanne objects into SeisData structures.
+* All processing functions now have out-of-place (copying) versions, as well as
+in-place versions.
+
+### 2019-05-03
+Release candidate
+* File read functions have been standardized and optimized, yielding significant
+performance improvements.
+* Each file read function can either update an existing SeisData object
+(e.g. readsac!(S, ...)) or create a new one (e.g., S = readsac(...)).
+* All file read functions accept wildcards in the file pattern(s).
+* Each file read function now returns a SeisData object, even for a single file.
+* A new wrapper, `read_data`/`read_data!`, has been written to work with
+all supported file formats. See the program help for info. This (very
+thin) wrapper is intended to standardize file read syntax while adding as
+little overhead as possible. The general calls are merely two:
+  + `read_data!(S, fmt::String, filestr, KWs)`
+  + `S = read_data(fmt::String, filestr, KWs)`
+* The old reader function calls like "readsac" are still being exported
+through v0.2.0, but that will change in a future release. Please adjust
+your scripts to use the generic read_data method.
+* Keyword defaults can once again change. Julia fixed it in 1.1, I guess?
+Use `dump(SeisIO.KW)` to see all parameter defaults; change with SeisIO.KW.name
+= val, e.g., `SeisIO.KW.nx_new = 360000`.
+
+#### Format-Specific Changes
+* `readmseed!`
+  - now creates Float32 data arrays by default
+  - `readmseed` method added
+  - memory allocation reoptimized for large files. This can be changed
+    to accommodate smaller files with two new keywords:
+    - `readmseed(..., nx_new=N)` allocates `N` samples to `:x` for a new
+      channel. After data read, unused memory is freed by resizing `:x`.
+      (Default: 86400000)
+    - `readmseed(..., nx_add=N)` increases `S.x[i]` by at least `N`
+      samples when new data are added to any channel `i`. (Default:
+      360000)
+* `readsac`
+  + now always returns a SeisData object. Use [1] after a read request to
+  return a SeisChannel, e.g. `C = readsac("longfile.sac")[1]`
+* `readsegy`
+  - if `full=true`, the file text header is now saved in `:misc` under
+  keyword "txthdr" in each channel.
+* `readuw`
+  + now operates only on data files, accepts wildcard string patterns, and
+  returns a SeisData object.
+  + can now handle time correction structures
+  + the old `readuw` function still exists, but is renamed `readuwevt`
+* `readwin32`
+  + now accepts wild card strings for channel files as well as data files
+  + by design, this means multiple channel files can be used simultaneously.
+  However, no checks are made for redundancy or conflicting info.
+* `rlennasc`
+  - renamed to `readlennasc`
+* New supported read format: GeoCSV. `readgeocsv` reads the tspair subformat by
+default. The tslist format can be read with keyword `tspair=false`.
+
+### 2019-04-24
+* Bug fixes:
+  + FDSN XML can now parse nonstandard time formats.
+  + `FDSNevq` keyword `src="all"` now only queries sources with the FDSN event service.
+  + `readuw`
+    - can now handle time correction structures
+    - can now read pick files with non-numeric info in error ("E") lines
+    - can now read a data file with no pick file in Windows and Mac OS
+
+### 2019-04-23
+* Performance improvements (speed, memory)
+  + `endtime`, `j2md`, `md2j` should be noticeably faster and more efficient
+* SEED improvements:
+  + `readmseed`: significant code optimization.
+    - File read times have improved by roughly a factor of 5.
+    - The number of allocations to read a large SEED file has been reduced by 5
+        orders of magnitude.
+    - Memory overhead has been reduced from >500% to <10%, though some rare
+      data encodings can use slightly more memory.
+  + `readmseed` memory allocation is now optimized for large files. Memory
+  allocation can be improved for smaller files with two new keywords:
+    - `readmseed(..., nx_new=N)` allocates `N` samples to `:x` for a new
+    channel. After data read, unused memory is freed by resizing arrays in `:x`.
+    (Default: 86400000)
+    - `readmseed(..., nx_add=N)` increases `S.x[i]` by at least `N` samples when
+    new data are added to any channel `i`. (Default: 360000)
+    - SEED reads and downloads now create Float32 data arrays by default.
+* Consistency changes:
+  + `SeisData(n)` now initializes `n` arrays of Float32 precision in `:x`, rather than Float64
+
+### 2019-04-19
+* Information logged to `:notes` has been standardized.
+  + Format: `time: function, options/KWs, human-readable description`
+  + Fields in an automatic note are comma-separated, with the function name
+  always in the first field and human-readable information always in the last.
+  + All processing functions should once again log faithfully to `:notes`.
+* Added `filtfilt!` methods for zero-phase filtering of data in SeisData,
+  SeisChannel, and SeisEvent objects.
+* Equality (`==`) in SeisIO parametric types no longer checks for equality of
+  their respective `:notes` fields.
+* Extended `note!` to lists of channels in SeisData objects.
+* Added information for potential contributors.
+
+### 2019-04-15
+* Added `readgeocsv` for two-column GeoCSV ASCII time-series data
+* `taper!` has replaced `autotap!`
+  + `taper!` typically allocates memory <1% of the size of a seisData object
+    to apply a cosine taper to the edges of each segment in each channel.
+  + Calling `ungap!(S, w=true)` now calls `taper!` to do windowing.
+  + Tapering no longer fills NaNs with the mean of non-NaN values. This has
+    moved to a separate function, `nanfill!`.
+* Extended `demean!`, `detrend!` to SeisChannel
+* `ungap!` now uses Boolean keyword `tap` for tapering, rather than `w`.
+
 ### 2019-03-22
 * `get_data / get_data!` can now handle long requests and coordinate searches with FDSN.
   + Long requests are broken into subrequests of length `nd` days. Change
@@ -12,8 +180,6 @@
   + Station XML for all FDSN `get_data` requests is now written to file by
   default. The default file created is "FDSNsta.xml". Change this with keyword
   `xml_file=`.
-* `get_data / get_data!` has an additional keyword, `wsac=true`, that
-  immediately writes post-processed data to SAC file.
 * Arrrays in the "data" field of a SeisData object (`:x`) can now be either
   Array{Float64,1} or Array{Float32,1}.
 * `readsac`, `readsegy`, `readuw`, and `readwin32` now read into single-

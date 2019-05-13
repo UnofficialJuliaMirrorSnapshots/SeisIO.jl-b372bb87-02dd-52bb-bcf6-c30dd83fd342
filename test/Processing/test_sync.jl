@@ -44,6 +44,7 @@ ts₁ = maximum(ts)
 
 # TEST 1 =====================================================================
 # Sync to last start; don't sync ends
+printstyled(stdout,"    sync to last start; don't sync ends\n", color=:light_green)
 T = sync(S)
 basic_checks(T)
 ts_new, te_new = get_edge_times(T)
@@ -84,6 +85,7 @@ basic_checks(T)
 
 # TEST 3 =====================================================================
 # Sync to last start; sync to first end
+printstyled(stdout,"    sync to last start; sync to first end\n", color=:light_green)
 te₀ = minimum(te)
 te₁ = maximum(te)
 
@@ -101,6 +103,7 @@ tx = Lx(T)
 
 # TEST 4 =====================================================================
 # Sync to first start; sync to first end
+printstyled(stdout,"    sync to first start; sync to last end\n", color=:light_green)
 U = sync(S, s="first", t="first")
 basic_checks(U)
 ts_new, te_new = get_edge_times(U)
@@ -145,6 +148,7 @@ end
 # Sync to s = DateTime (first trace start), t = "none"
 # trace 3 should be 100 samples shorter
 # so should trace 2
+printstyled(stdout,"    sync to DateTime; don't sync ends\n", color=:light_green)
 ts₆ = S.t[1][1,2]
 te₆ = S.t[1][1,2] + round(Int, 1.0e6*nx/fs)
 ds₆ = u2d(ts₆*1.0e-6)
@@ -211,9 +215,13 @@ found = findall([occursin("appended 101", i) for i in X.notes[2]])
 
 # TEST 8 =====================================================================
 # A few simple combinations; do these work?
+printstyled(stdout,"    sync start to DateTime; sync first end\n", color=:light_green)
 X = sync(S, s=ds₆, t="first"); basic_checks(X)
+
+printstyled(stdout,"    sync start to DateTime; sync to last end\n", color=:light_green)
 X = sync(S, s=ds₆, t="last"); basic_checks(X)
 
+printstyled(stdout,"    sync start to string time; sync to last end\n", color=:light_green)
 ss = string(ds₆)
 Y = sync(S, s=ds₆, t="last", v=3); basic_checks(Y)
 
@@ -226,16 +234,16 @@ end
 
 # TEST 9 =====================================================================
 # Do we actually prune campaign data when all times are out of range?
+printstyled(stdout,"    prune all irregular data when all times are out of range\n", color=:light_green)
 
 ss = string(ds₆)
 Z = deepcopy(S)
 t = deepcopy(Z.t[5])
 t = hcat(t[:,1:1], vcat(0, diff(t[:,2:2], dims=1)))
 Z.t[5] = deepcopy(t)
-open("runtests.log", "a") do out
-  redirect_stdout(out) do
-    sync!(Z, v=3); basic_checks(Z)
-  end
+
+redirect_stdout(out) do
+  sync!(Z, v=3); basic_checks(Z)
 end
 
 # Expect: Z[5] is gone
@@ -243,3 +251,60 @@ for i in [1,2,3,4,6]
   @test any(Z.id.==S.id[i])
 end
 @test (any(Z.id.==S.id[5]) == false)
+
+# ===========================================================================
+# method extenson to SeisChannel
+printstyled(stdout,"    SeisChannel method extension\n", color=:light_green)
+ts₆ = S.t[1][1,2]
+te₆ = S.t[1][1,2] + round(Int, 1.0e6*nx/fs)
+ds₆ = u2d(ts₆*1.0e-6)
+de₆ =  u2d(te₆*1.0e-6)
+C = deepcopy(S[1])
+sync!(C, s=ds₆)
+W = SeisData(C)
+basic_checks(W)
+ts_new, te_new = get_edge_times(W)
+wx = Lx(W)
+
+# Repeat with an end time
+C = deepcopy(S[1])
+W = SeisData(sync(C, s=ds₆, t=de₆))
+basic_checks(W)
+ts_new, te_new = get_edge_times(W)
+wx = Lx(W)
+
+# ===========================================================================
+# method extenson to SeisEvent
+printstyled(stdout,"    SeisEvent method extension\n", color=:light_green)
+ts₆ = S.t[1][1,2]
+te₆ = S.t[1][1,2] + round(Int, 1.0e6*nx/fs)
+ds₆ = u2d(ts₆*1.0e-6)
+de₆ =  u2d(te₆*1.0e-6)
+Ev = SeisEvent(hdr = randSeisHdr(), data = deepcopy(S))
+sync!(Ev, s=ds₆)
+W = Ev.data
+basic_checks(W)
+ts_new, te_new = get_edge_times(W)
+wx = Lx(W)
+
+# Expectations:
+@test sx[2]-wx[2] == 100                      # Trace 2 is 100 samples shorter
+for i in [1,3,4,5,6]
+  @test sx[i] == wx[i]                        # No change in other trace lengths
+end
+@test minimum(ts_new .≥ ts₆) == true           # We start at ts₆, not before
+@test findfirst(ts_new .== ts₆).== 1          # Defined start time
+
+Ev = SeisEvent(hdr = randSeisHdr(), data = deepcopy(S))
+W = sync(Ev, s=ds₆).data
+basic_checks(W)
+ts_new, te_new = get_edge_times(W)
+wx = Lx(W)
+
+# Expectations:
+@test sx[2]-wx[2] == 100                      # Trace 2 is 100 samples shorter
+for i in [1,3,4,5,6]
+  @test sx[i] == wx[i]                        # No change in other trace lengths
+end
+@test minimum(ts_new .≥ ts₆) == true           # We start at ts₆, not before
+@test findfirst(ts_new .== ts₆).== 1          # Defined start time

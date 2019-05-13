@@ -223,29 +223,7 @@ has_stream(sta::Array{String,2};
   ) = check_stream_exists([join(sta[i,:], '.') for i=1:size(sta,1)],
                           SL_info("STREAMS", u=u, port=port), gap=gap)
 
-# ### KEYWORD ARGUMENTS
-# Specify as `kw=value`, e.g., `SeedLink!(S, sta, mode="TIME", refresh=120)`.
-#
-# | Name   | Default | Type            | Description                      |
-# |:-------|:--------|:----------------|:---------------------------------|
-# | gap      | 3600    | Real            | max. gap since last packet [s]   |
-# | kai     | 600     | Real            | keepalive interval [s]           |
-# | mode   | "DATA"  | String          | TIME, DATA, or FETCH             |
-# | port      | 18000   | Integer         | port number                      |
-# | refresh      | 20      | Real            | base refresh interval [s]        |
-# | s      | 0       | (1)             | start time (TIME or FETCH only)  |
-# | x_on_err      | true    | Bool            | exits on error?                  |
-# | t      | 300     | (1)             | end time (TIME only)             |
-# | u      | (iris)  | String          | url, no "http://"                |
-# | v      | 0       | Int             | verbosity                        |
-# | w      | false   | Bool            | write raw packets to disk? (6)   |
-# (1) Type `?parsetimewin` for time window syntax help
-# (2) If `length(patt) < length(sta)`, `patt[end]` repeats to `length(sta)`
-# (3) 0x01 = check if stations exist at `u`; 0x02 = check for recent data at `u`
-# (4) A stream with no data for `gap` seconds is considered offline if `f=0x02`.
-# (5) File name is auto-generated. Each `SeedLink!` call uses a unique file.
-
-"""
+@doc """
     SeedLink!(S, sta)
 
 Begin acquiring SeedLink data to SeisData structure `S`. New channels
@@ -266,15 +244,15 @@ When finished, close connection manually with `close(S.c[n])` where n is connect
 
 * Standard keywords: fmt, opts, q, si, to, v, w, y
 * SL keywords: gap, kai, mode, port, refresh, safety, x_on_err
-"""
+""" SeedLink!
 function SeedLink!(S::SeisData, sta::Array{String,1}, patts::Array{String,1};
                     gap::Real=KW.SL.gap,
                     kai::Real=KW.SL.kai,
                     mode::String=KW.SL.mode,
                     port::Int64=KW.SL.port,
                     refresh::Real=KW.SL.refresh,
-                    s=0::Union{Real,DateTime,String},
-                    t=300::Union{Real,DateTime,String},
+                    s::TimeSpec=0,
+                    t::TimeSpec=300,
                     u::String="rtserve.iris.washington.edu",
                     v::Int64=KW.v,
                     w::Bool=KW.w,
@@ -285,7 +263,7 @@ function SeedLink!(S::SeisData, sta::Array{String,1}, patts::Array{String,1};
   # ==========================================================================
   # init, warnings, sanity checks
   Ns = size(sta,1)
-  SEED.swap = false
+  setfield!(BUF, :swap, false)
 
   # Refresh interval
   refresh = maximum([refresh, eps()])
@@ -310,12 +288,6 @@ function SeedLink!(S::SeisData, sta::Array{String,1}, patts::Array{String,1};
   sline = readline(S.c[q])
   ver = getSLver(vline)
 
-  # version-based compatibility checks (unlikely that such a server exists)
-  # if ver < 2.5 && length(sta) > 1
-  #   error(@sprintf("Multi-station mode unsupported in SeedLink v%.1f\n", ver))
-  # elseif ver < 2.92 && mode == "TIME"
-  #   error(@sprintf("Mode \"TIME\" not available in SeedLink v%.1f\n", ver))
-  # end
   (v > 1) && println("Version = ", ver)
   (v > 1) && println("Server = ", strip(sline,['\r','\n']))
   # ==========================================================================
@@ -413,11 +385,11 @@ function SeedLink!(S::SeisData, sta::Array{String,1}, patts::Array{String,1};
           (v > 1) && @printf(stdout, "%s: Processing packets ", string(now()))
           while !eof(buf)
             pkt_id = String(read!(buf, Array{UInt8, 1}(undef, 8)))
-            parserec!(S, buf, v)
+            parserec!(S, BUF, buf, v, 65536, 65536)
             (v > 1) && @printf(stdout, "%s, ", pkt_id)
           end
           (v > 1) && @printf(stdout, "\b\b...done current packet dump.\n")
-          trunc_x!(S)
+          seed_cleanup!(S, BUF)
         end
 
         # SeedLink (non-standard) keep-alive gets sent every kai seconds
@@ -446,8 +418,8 @@ function SeedLink!(S::SeisData, C::Union{String,Array{String,1},Array{String,2}}
                     mode::String=KW.SL.mode,
                     port::Int64=KW.SL.port,
                     refresh::Real=KW.SL.refresh,
-                    s=0::Union{Real,DateTime,String},
-                    t=300::Union{Real,DateTime,String},
+                    s::TimeSpec=0,
+                    t::TimeSpec=300,
                     v::Int64=KW.v,
                     u::String="rtserve.iris.washington.edu",
                     w::Bool=KW.w,
@@ -464,14 +436,15 @@ function SeedLink!(S::SeisData, C::Union{String,Array{String,1},Array{String,2}}
   return S
 end
 
+@doc (@doc SeedLink!)
 function SeedLink(sta::Array{String,1}, pat::Array{String,1};
   gap::Real=KW.SL.gap,
   kai::Real=KW.SL.kai,
   mode::String=KW.SL.mode,
   port::Int64=KW.SL.port,
   refresh::Real=KW.SL.refresh,
-  s=0::Union{Real,DateTime,String},
-  t=300::Union{Real,DateTime,String},
+  s::TimeSpec=0,
+  t::TimeSpec=300,
   v::Int64=KW.v,
   u::String="rtserve.iris.washington.edu",
   w::Bool=KW.w,
@@ -488,8 +461,8 @@ function SeedLink(C::Union{String,Array{String,1},Array{String,2}};
   mode::String=KW.SL.mode,
   port::Int64=KW.SL.port,
   refresh::Real=KW.SL.refresh,
-  s=0::Union{Real,DateTime,String},
-  t=300::Union{Real,DateTime,String},
+  s::TimeSpec=0,
+  t::TimeSpec=300,
   v::Int64=KW.v,
   u::String="rtserve.iris.washington.edu",
   w::Bool=KW.w,

@@ -1,5 +1,4 @@
-import Statistics:mean
-printstyled("  demean, detrend\n", color=:light_green)
+printstyled("  demean, detrend, unscale\n", color=:light_green)
 
 S = randSeisData(2, s=1.0)[2:2]
 fs = 100.0
@@ -46,4 +45,48 @@ for i = 1:3
   W.x[1][k] .= NaN
   detrend!(W)
   @test length(k) == length(findall(isnan.(W.x[1])))
+
+  C = randSeisChannel()
+  j = randperm(length(C.x))[1:rand(1:div(length(C.x),2))]
+  C.x[j] .= NaN
+  D = deepcopy(C)
+  demean!(C)
+  detrend!(D)
+  @test length(j) == length(findall(isnan.(C.x))) == length(findall(isnan.(D.x)))
 end
+
+# Safe demean, detrend
+C = randSeisChannel()
+D = detrend(C)
+S = randSeisData()
+T = detrend(S)
+V = randSeisEvent()
+W = detrend(V)
+
+C = randSeisChannel()
+D = demean(C)
+S = randSeisData()
+T = demean(S)
+V = randSeisEvent()
+W = demean(V)
+
+demean!(C)
+detrend!(C)
+demean!(V)
+detrend!(V)
+
+# Test in-place unscaling
+C = randSeisChannel(s=true)
+S = randSeisData()
+V = randSeisEvent()
+unscale!(C)
+unscale!(S, irr=true)
+unscale!(V, irr=true)
+
+# Test for out-of-place unscaling
+C = randSeisChannel()
+S = randSeisData()
+V = randSeisEvent()
+D = unscale(C)
+T = unscale(S)
+W = unscale(V)

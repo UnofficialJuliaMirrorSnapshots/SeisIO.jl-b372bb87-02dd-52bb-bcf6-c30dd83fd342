@@ -1,10 +1,10 @@
 module RandSeis
-using ..SeisIO: EQLoc, EventTraceData, GeoLoc, PZResp, PZResp64, SeisData, SeisChannel, SeisHdr, SeisEvent,
-  code2typ, getbandcode, note!, sμ, μs
+using SeisIO, SeisIO.Quake
+using Random:randexp, randstring, shuffle!
 import Dates:now
-import Random:randexp, randstring, shuffle!
-
-export randSeisChannel, randSeisData, randSeisEvent, randSeisHdr
+import SeisIO:InstrumentPosition, code2typ, getbandcode, note!, sμ, μs
+export randSeisChannel, randSeisData, randSeisEvent, randSeisHdr, randPhaseCat,
+randSeisSrc
 
 include("randseis_utils.jl")
 include("randSeisChannel.jl")

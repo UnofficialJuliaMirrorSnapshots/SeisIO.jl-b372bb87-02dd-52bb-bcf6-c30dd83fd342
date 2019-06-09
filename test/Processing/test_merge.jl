@@ -770,7 +770,7 @@ i = findid(A, S)
 @test ≈(S.t[i][2,1], 1+length(A.x))
 @test ≈(S.t[i][2,2], (5-1/S.fs[i])*1.0e6)
 
-printstyled(stdout,"      common channels and \"splat\" notation\n", color=:light_green)
+printstyled(stdout,"      common channels and \"splat\" notation (mseis!)\n", color=:light_green)
 (S,T) = mktestseis()
 U = merge(S,T)
 sizetest(U, 7)
@@ -781,6 +781,14 @@ merge!(V)
 
 mseis!(S,T)
 @test S == V
+
+printstyled(stdout,"      mseis! with Types from SeisIO.Quake\n", color=:light_green)
+S = randSeisData()
+mseis!(S,   randSeisChannel(),
+            convert(EventChannel, randSeisChannel()),
+            rand(Float64, 23),  # should warn
+            convert(EventTraceData, randSeisData()),
+            randSeisEvent())
 
 printstyled(stdout,"      two independent channels ==> same as \"+\"\n", color=:light_green)
 (S,T) = mktestseis()
@@ -822,3 +830,12 @@ n_targ = 7
 
 # Old: (Test Passed, 1.42978256,  154864097, 0.038663895, Base.GC_Diff(154864097, 109, 0, 1845386, 4165, 0,  38663895, 7, 0))
 # New: (Test Passed, 1.263168574, 128490661, 0.108295874, Base.GC_Diff(128490661,  81, 0, 1324714, 3857, 0, 108295874, 6, 1))
+
+printstyled(stdout,"      purge!\n", color=:light_green)
+(S,T) = mktestseis()
+S.t[5] = Array{Int64,2}(undef,0,2)
+S.x[5] = Array{Float32,1}(undef,0)
+U = purge(S)
+purge!(S)
+@test S == U
+@test S.n == 4

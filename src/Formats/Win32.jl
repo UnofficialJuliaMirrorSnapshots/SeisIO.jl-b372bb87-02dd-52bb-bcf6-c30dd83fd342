@@ -1,8 +1,3 @@
-export readwin32, readwin32!
-
-# =======================================================
-# Auxiliary functions not for export
-
 function findhex(hexID::UInt16, hexIDs::Array{UInt16,1})
   k = 0
   @inbounds while k < lastindex(hexIDs)
@@ -212,10 +207,6 @@ function readwin32(dfilestr::String, cfilestr::String;
             push!(gapStart[k], ii + 1)
             push!(gapEnd[k], ii + P)
             ii += P
-            if v > 2
-              println(gapStart)
-              println(gapEnd)
-            end
           end
 
           y = getindex(getfield(S, :x), k)

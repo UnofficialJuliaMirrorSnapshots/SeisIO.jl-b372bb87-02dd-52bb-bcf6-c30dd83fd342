@@ -1,15 +1,17 @@
-using Compat, Dates, DSP, Logging, Printf, SeisIO, SeisIO.RandSeis, Test
+using Compat, Dates, DSP, Logging, Printf, SeisIO, SeisIO.Quake, SeisIO.RandSeis, Test
 import Dates: DateTime, Hour, now
 import DelimitedFiles: readdlm
 import Random: rand, randperm, randstring
-import SeisIO: BUF, EventChannel, GphysData, FDSN_event_xml, FDSN_sta_xml,
-  bad_chars, checkbuf!, datafields, datareq_summ, endtime,
-  fillx_i32_be!, fillx_i32_le!, findhex, get_HTTP_req,
-  get_http_post, get_separator, get_views, getpf, int2tstr, mean, minreq!,
+import SeisIO: BUF, FDSN_sta_xml,
+  bad_chars, checkbuf!, checkbuf_8!, datafields, datareq_summ, endtime,
+  fillx_i16_le!, fillx_i32_be!, fillx_i32_le!, findhex, get_HTTP_req,
+  get_http_post, get_views, int2tstr, mean, minreq!,
   mktaper!, mktime, parse_charr, parse_chstr, parse_sl,
   resp_f, safe_isdir, safe_isfile, sep, sμ, t_collapse,
-  t_expand, t_win, taper_seg!, tnote, tstr2int, w_time, webhdr, xtmerge!, μs
+  t_expand, t_win, taper_seg!, tnote, tstr2int, w_time, webhdr,
+  xtmerge!, μs
 import SeisIO.RandSeis: getyp2codes, pop_rand_dict!
+import SeisIO.Quake: unsafe_convert
 import Statistics: mean
 
 # ===========================================================================
@@ -141,6 +143,11 @@ function breaking_seis()
 
   # Need a channel with a very long name to test in show.jl
   S.name[1] = "The quick brown fox jumped over the lazy dog"
+
+  # Need a channel with a non-ASCII filename
+  S.name[2] = "Moominpaskanäköinen"
+  S.misc[2]["whoo"] = String[]        # ...and an empty String array in :misc
+  S.misc[2]["♃♄♅♆♇"] = rand(3,4,5,6)  # ...and a 4d array in :misc
 
   #= Here we test true, full Unicode support;
     only 0xff can be a separator in S.notes[2] =#
@@ -297,3 +304,6 @@ out = open("runtests.log", "a")
 logger = SimpleLogger(out)
 global_logger(logger)
 @info("stdout redirect and logging")
+
+# Set some keyword defaults
+SeisIO.KW.comp = 0x00

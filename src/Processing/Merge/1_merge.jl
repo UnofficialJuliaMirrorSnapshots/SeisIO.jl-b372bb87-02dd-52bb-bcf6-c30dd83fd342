@@ -150,18 +150,18 @@ function merge!(S::Y; v::Int64=KW.v, purge_only::Bool=false) where Y<:GphysData
             (β != 0.0) && (baz = β)
           end
           if dist == 0.0
+            # Δ is already in use, so...
             d = getindex(getfield(S, :dist), i)
             (d != 0.0) && (dist = d)
           end
           merge!(pha, getindex(getfield(S, :pha), i))
         end
-        # overwrite phase picks with values from pha[Ω]
+        # This guarantees that the phase catalog of Ω overwrites others
         merge!(pha, getindex(getfield(S, :pha), Ω))
-        
-        setindex!(getindex(getfield(S, :pha)), pha, Ω)
-        setindex!(getindex(getfield(S, :az)),   az, Ω)
-        setindex!(getindex(getfield(S, :baz)), baz, Ω)
-        setindex!(getindex(getfield(S, :dist)),  d, Ω)
+        setindex!(getfield(S, :az),     az, Ω)
+        setindex!(getfield(S, :baz),   baz, Ω)
+        setindex!(getfield(S, :dist), dist, Ω)
+        setindex!(getfield(S, :pha),   pha, Ω)
       end
 
       # T,X ===================================================================

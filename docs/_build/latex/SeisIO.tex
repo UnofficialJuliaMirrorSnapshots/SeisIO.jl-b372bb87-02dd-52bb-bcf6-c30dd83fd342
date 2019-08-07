@@ -9,19 +9,49 @@
 \usepackage[utf8]{inputenc}
 \ifdefined\DeclareUnicodeCharacter
 % support both utf8 and utf8x syntaxes
-\edef\sphinxdqmaybe{\ifdefined\DeclareUnicodeCharacterAsOptional\string"\fi}
-  \DeclareUnicodeCharacter{\sphinxdqmaybe00A0}{\nobreakspace}
-  \DeclareUnicodeCharacter{\sphinxdqmaybe2500}{\sphinxunichar{2500}}
-  \DeclareUnicodeCharacter{\sphinxdqmaybe2502}{\sphinxunichar{2502}}
-  \DeclareUnicodeCharacter{\sphinxdqmaybe2514}{\sphinxunichar{2514}}
-  \DeclareUnicodeCharacter{\sphinxdqmaybe251C}{\sphinxunichar{251C}}
-  \DeclareUnicodeCharacter{\sphinxdqmaybe2572}{\textbackslash}
+  \ifdefined\DeclareUnicodeCharacterAsOptional
+    \def\sphinxDUC#1{\DeclareUnicodeCharacter{"#1}}
+  \else
+    \let\sphinxDUC\DeclareUnicodeCharacter
+  \fi
+  \sphinxDUC{00A0}{\nobreakspace}
+  \sphinxDUC{2500}{\sphinxunichar{2500}}
+  \sphinxDUC{2502}{\sphinxunichar{2502}}
+  \sphinxDUC{2514}{\sphinxunichar{2514}}
+  \sphinxDUC{251C}{\sphinxunichar{251C}}
+  \sphinxDUC{2572}{\textbackslash}
 \fi
 \usepackage{cmap}
 \usepackage[T1]{fontenc}
 \usepackage{amsmath,amssymb,amstext}
 \usepackage{babel}
+
+
+
 \usepackage{times}
+\expandafter\ifx\csname T@LGR\endcsname\relax
+\else
+% LGR was declared as font encoding
+  \substitutefont{LGR}{\rmdefault}{cmr}
+  \substitutefont{LGR}{\sfdefault}{cmss}
+  \substitutefont{LGR}{\ttdefault}{cmtt}
+\fi
+\expandafter\ifx\csname T@X2\endcsname\relax
+  \expandafter\ifx\csname T@T2A\endcsname\relax
+  \else
+  % T2A was declared as font encoding
+    \substitutefont{T2A}{\rmdefault}{cmr}
+    \substitutefont{T2A}{\sfdefault}{cmss}
+    \substitutefont{T2A}{\ttdefault}{cmtt}
+  \fi
+\else
+% X2 was declared as font encoding
+  \substitutefont{X2}{\rmdefault}{cmr}
+  \substitutefont{X2}{\sfdefault}{cmss}
+  \substitutefont{X2}{\ttdefault}{cmtt}
+\fi
+
+
 \usepackage[Bjarne]{fncychap}
 \usepackage{sphinx}
 
@@ -36,25 +66,14 @@
 \urlstyle{same}
 \addto\captionsenglish{\renewcommand{\contentsname}{Introduction}}
 
-\addto\captionsenglish{\renewcommand{\figurename}{Fig.}}
-\addto\captionsenglish{\renewcommand{\tablename}{Table}}
-\addto\captionsenglish{\renewcommand{\literalblockname}{Listing}}
-
-\addto\captionsenglish{\renewcommand{\literalblockcontinuedname}{continued from previous page}}
-\addto\captionsenglish{\renewcommand{\literalblockcontinuesname}{continues on next page}}
-\addto\captionsenglish{\renewcommand{\sphinxnonalphabeticalgroupname}{Non-alphabetical}}
-\addto\captionsenglish{\renewcommand{\sphinxsymbolsname}{Symbols}}
-\addto\captionsenglish{\renewcommand{\sphinxnumbersname}{Numbers}}
-
-\addto\extrasenglish{\def\pageautorefname{page}}
-
+\usepackage{sphinxmessages}
 \setcounter{tocdepth}{1}
 
 
 
 \title{SeisIO Documentation}
-\date{Jun 04, 2019}
-\release{0.2.0}
+\date{Aug 06, 2019}
+\release{0.3.0}
 \author{Joshua Jones}
 \newcommand{\sphinxlogo}{\vbox{}}
 \renewcommand{\releasename}{Release}
@@ -62,7 +81,7 @@
 \begin{document}
 
 \pagestyle{empty}
-\maketitle
+\sphinxmaketitle
 \pagestyle{plain}
 \sphinxtableofcontents
 \pagestyle{normal}
@@ -107,7 +126,6 @@ format or written to other supported file formats.
 \label{\detokenize{src/intro:installation}}
 From the Julia prompt: press \sphinxcode{\sphinxupquote{{]}}} to enter the Pkg environment, then type
 
-\fvset{hllines={, ,}}%
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYG{n}{add} \PYG{n}{SeisIO}\PYG{p}{;} \PYG{n}{build}\PYG{p}{;} \PYG{n}{precompile}
 \end{sphinxVerbatim}
@@ -115,7 +133,6 @@ From the Julia prompt: press \sphinxcode{\sphinxupquote{{]}}} to enter the Pkg e
 Dependencies should install automatically. To verify that everything works
 correctly, type
 
-\fvset{hllines={, ,}}%
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYG{n}{test} \PYG{n}{SeisIO}
 \end{sphinxVerbatim}
@@ -123,7 +140,6 @@ correctly, type
 and allow 10-20 minutes for tests to complete. To get started, exit the Pkg
 environment by pressing Backspace or Control + C, then type
 
-\fvset{hllines={, ,}}%
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYG{n}{using} \PYG{n}{SeisIO}
 \end{sphinxVerbatim}
@@ -161,7 +177,6 @@ From the Julia prompt: press \sphinxcode{\sphinxupquote{{]}}} to enter the Pkg e
 In addition to these documents, a number of help documents can be called at the
 Julia prompt. These commands are a useful starting point:
 
-\fvset{hllines={, ,}}%
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 ?chanspec           \PYGZsh{} how to specify channels in web requests
 ?get\PYGZus{}data           \PYGZsh{} how to download data
@@ -195,7 +210,6 @@ Create a new, empty \sphinxstylestrong{SeisChannel} object with
 The meanings of the field names are explained {\hyperref[\detokenize{src/Appendices/keywords:dkw}]{\sphinxcrossref{\DUrole{std,std-ref}{here}}}}; you can also type
 \sphinxcode{\sphinxupquote{?SeisChannel}} at the Julia prompt. You can edit field values manually, e.g.,
 
-\fvset{hllines={, ,}}%
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYG{n}{Ch}\PYG{o}{.}\PYG{n}{loc} \PYG{o}{=} \PYG{p}{[}\PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{90.0}\PYG{p}{,} \PYG{l+m+mf}{0.0}\PYG{p}{,} \PYG{l+m+mf}{9300.0}\PYG{p}{,} \PYG{l+m+mf}{0.0}\PYG{p}{,} \PYG{l+m+mf}{0.0}\PYG{p}{]}
 \PYG{n}{Ch}\PYG{o}{.}\PYG{n}{name} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{South pole}\PYG{l+s+s2}{\PYGZdq{}}
@@ -203,7 +217,6 @@ The meanings of the field names are explained {\hyperref[\detokenize{src/Appendi
 
 or you can set them with keywords at creation:
 
-\fvset{hllines={, ,}}%
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYG{n}{Ch} \PYG{o}{=} \PYG{n}{SeisChannel}\PYG{p}{(}\PYG{n}{name}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{MANOWAR JAJAJA}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
 \end{sphinxVerbatim}
@@ -220,7 +233,6 @@ at a time, e.g.,
 
 They can be explored similarly:
 
-\fvset{hllines={, ,}}%
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYG{n}{S}\PYG{o}{.}\PYG{n}{name}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{South pole}\PYG{l+s+s2}{\PYGZdq{}}
 \PYG{n}{S}\PYG{o}{.}\PYG{n}{loc}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{=} \PYG{p}{[}\PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{90.0}\PYG{p}{,} \PYG{l+m+mf}{0.0}\PYG{p}{,} \PYG{l+m+mf}{9300.0}\PYG{p}{,} \PYG{l+m+mf}{0.0}\PYG{p}{,} \PYG{l+m+mf}{0.0}\PYG{p}{]}
@@ -271,7 +283,6 @@ appending it, similar to adding two dictionaries together.
 
 These methods are aliased to the addition operator:
 
-\fvset{hllines={, ,}}%
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYG{n}{S} \PYG{o}{+}\PYG{o}{=} \PYG{n}{SeisChannel}\PYG{p}{(}\PYG{p}{)}      \PYG{c+c1}{\PYGZsh{} equivalent to push!(S, SeisChannel())}
 \PYG{n}{S} \PYG{o}{+}\PYG{o}{=} \PYG{n}{randseisdata}\PYG{p}{(}\PYG{l+m+mi}{3}\PYG{p}{)}    \PYG{c+c1}{\PYGZsh{} adds a random 3\PYGZhy{}element SeisData structure to S in place}
@@ -290,7 +301,6 @@ running the {\hyperref[\detokenize{src/Appendices/examples:webex}]{\sphinxcrossr
 The easiest way to find channels of interest in a data structure is to
 use findid, but you can obtain an array of partial matches with findchan:
 
-\fvset{hllines={, ,}}%
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYG{n}{S} \PYG{o}{=} \PYG{n}{SeisData}\PYG{p}{(}\PYG{n}{randseisdata}\PYG{p}{(}\PYG{l+m+mi}{5}\PYG{p}{)}\PYG{p}{,} \PYG{n}{SeisChannel}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
       \PYG{n}{SeisChannel}\PYG{p}{(}\PYG{n+nb}{id}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{UW.SEP..EHZ}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{n}{name}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Darth Exploded}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}
@@ -304,7 +314,6 @@ You can sort by channel ID with the \sphinxtitleref{sort} command.
 Several functions exist to prune empty and unwanted channels from SeisData
 structures.
 
-\fvset{hllines={, ,}}%
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 delete!(S, 1:2)  \PYGZsh{} Delete first two channels of S
 S \PYGZhy{}= 3           \PYGZsh{} Delete third channel of S
@@ -493,7 +502,7 @@ $^{\text{(a)}}$ \sphinxcode{\sphinxupquote{DEL}} here is \textbackslash{}x7f (AS
 \end{fulllineitems}
 
 
-Return current UTC time formatted yyyy-mm-ddTHH:MM:SS.\(\mu\)\(\mu\)\(\mu\).
+Return current UTC time formatted yyyy-mm-ddTHH:MM:SS.uuu.
 
 
 \begin{fulllineitems}
@@ -820,7 +829,6 @@ and the smallest has \sphinxtitleref{Nmin}, we recommend \sphinxtitleref{nx\_new
 
 Default values can be changed in SeisIO keywords, e.g.,
 
-\fvset{hllines={, ,}}%
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYG{n}{SeisIO}\PYG{o}{.}\PYG{n}{KW}\PYG{o}{.}\PYG{n}{nx\PYGZus{}new} \PYG{o}{=} \PYG{l+m+mi}{60000}
 \PYG{n}{SeisIO}\PYG{o}{.}\PYG{n}{KW}\PYG{o}{.}\PYG{n}{nx\PYGZus{}add} \PYG{o}{=} \PYG{l+m+mi}{360000}
@@ -1012,7 +1020,7 @@ real-time streaming, see {\hyperref[\detokenize{src/Web/seedlink:seedlink-sectio
 \item[] 
 \item[] \sphinxstylestrong{method}
 \item[] \sphinxstylestrong{“IRIS”}: {\hyperref[\detokenize{src/Web/webclients:irisws}]{\sphinxcrossref{\DUrole{std,std-ref}{IRISWS}}}}.
-\item[] \sphinxstylestrong{“FDSN”}: {\hyperref[\detokenize{src/Web/webclients:fdsnws}]{\sphinxcrossref{\DUrole{std,std-ref}{FDSNWS dataselect}}}}. Change FDSN servers with keyword \sphinxcode{\sphinxupquote{-{-}src}} using the {\hyperref[\detokenize{src/Appendices/web_syntax:servers}]{\sphinxcrossref{\DUrole{std,std-ref}{server list}}}} (also available by typing \sphinxcode{\sphinxupquote{?seis\_www}}).
+\item[] \sphinxstylestrong{“FDSN”}: {\hyperref[\detokenize{src/Web/webclients:fdsnws}]{\sphinxcrossref{\DUrole{std,std-ref}{FDSNWS dataselect}}}}. Change FDSN servers with keyword \sphinxcode{\sphinxupquote{src}} using the {\hyperref[\detokenize{src/Appendices/web_syntax:servers}]{\sphinxcrossref{\DUrole{std,std-ref}{server list}}}} (also available by typing \sphinxcode{\sphinxupquote{?seis\_www}}).
 \item[] 
 \item[] \sphinxstylestrong{channels}
 \item[] Channels to retrieve; can be passed as a {\hyperref[\detokenize{src/Appendices/web_syntax:cid}]{\sphinxcrossref{\DUrole{std,std-ref}{string, string array, or parameter file}}}}. Type \sphinxcode{\sphinxupquote{?chanspec}} at the Julia prompt for more info.
@@ -1021,8 +1029,8 @@ real-time streaming, see {\hyperref[\detokenize{src/Web/seedlink:seedlink-sectio
 \item[] Keyword arguments; see also {\hyperref[\detokenize{src/Appendices/keywords:dkw}]{\sphinxcrossref{\DUrole{std,std-ref}{SeisIO standard KWs}}}} or type \sphinxcode{\sphinxupquote{?SeisIO.KW}}.
 \item[] Standard keywords: fmt, nd, opts, rad, reg, si, to, v, w, y
 \item[] Other keywords:
-\item[] \sphinxcode{\sphinxupquote{-{-}s}}: Start time
-\item[] \sphinxcode{\sphinxupquote{-{-}t}}: Termination (end) time
+\item[] \sphinxcode{\sphinxupquote{s}}: Start time
+\item[] \sphinxcode{\sphinxupquote{t}}: Termination (end) time
 \end{DUlineblock}
 
 
@@ -1072,8 +1080,8 @@ FDSN data query with get\_data! wrapper.
 \begin{DUlineblock}{0em}
 \item[] {\hyperref[\detokenize{src/Appendices/keywords:dkw}]{\sphinxcrossref{\DUrole{std,std-ref}{Shared keywords}}}}: fmt, nd, opts, rad, reg, s, si, t, to, v, w, y
 \item[] Other keywords:
-\item[] \sphinxcode{\sphinxupquote{-{-}s}}: Start time
-\item[] \sphinxcode{\sphinxupquote{-{-}t}}: Termination (end) time
+\item[] \sphinxcode{\sphinxupquote{s}}: Start time
+\item[] \sphinxcode{\sphinxupquote{t}}: Termination (end) time
 \item[] \sphinxcode{\sphinxupquote{xf}}: Name of XML file to save station metadata
 \end{DUlineblock}
 
@@ -1098,8 +1106,8 @@ remote station XML files by web query.
 \begin{DUlineblock}{0em}
 \item[] {\hyperref[\detokenize{src/Appendices/keywords:dkw}]{\sphinxcrossref{\DUrole{std,std-ref}{Shared keywords}}}}: src, to, v
 \item[] Other keywords:
-\item[] \sphinxcode{\sphinxupquote{-{-}s}}: Start time
-\item[] \sphinxcode{\sphinxupquote{-{-}t}}: Termination (end) time
+\item[] \sphinxcode{\sphinxupquote{s}}: Start time
+\item[] \sphinxcode{\sphinxupquote{t}}: Termination (end) time
 \end{DUlineblock}
 
 
@@ -1313,38 +1321,22 @@ object by applying itself to the SeisData object in the \sphinxcode{\sphinxupquo
 \subsection{Signal Processing}
 \label{\detokenize{src/Processing/processing:signal-processing}}
 Remove the mean from all channels i with S.fs{[}i{]} \textgreater{} 0.0. Specify irr=true to also
-remove the mean from irregularly sampled channels. Ignores NaNs.
+remove the mean from irregularly sampled channels. Specify chans=CC to restrict
+to channel number(s) CC. Ignores NaNs.
 
-Remove the polynomial trend of degree n from every regularly-sampled channel i
-in S using a least-squares polynomial fit. Ignores NaNs.
-
-
-\begin{fulllineitems}
-\pysigline{\sphinxbfcode{\sphinxupquote{equalize\_resp!(S,~resp\_new::Array{[},~hc\_new=HC,~C=CH{]})}}}
-\end{fulllineitems}
-
-
-Translate all data in SeisData structure \sphinxstylestrong{S} to instrument response \sphinxstylestrong{resp\_new}.
-Expected structure of \sphinxstylestrong{resp\_new} is a complex Float64 2d array with zeros in
-\sphinxstylestrong{resp{[}:,1{]}}, poles in \sphinxstylestrong{resp{[}:,2{]}}. If channel \sphinxstylestrong{i} has key \sphinxstylestrong{S.misc{[}i{]}{[}“hc”{]}},
-the corresponding value is used as the critical damping constant; otherwise a
-value of 1.0 is assumed.
+Remove the polynomial trend of degree n from every regularly-sampled channel
+in S using a least-squares polynomial fit. Specify chans=CC to restrict
+to channel number(s) CC. Ignores NaNs.
 
 
 \begin{fulllineitems}
-\pysigline{\sphinxbfcode{\sphinxupquote{filtfilt!(S::SeisData{[};~KWs{]})}}}
+\pysigline{\sphinxbfcode{\sphinxupquote{filtfilt!(S::GphysData{[};~KWs{]})}}}
 \end{fulllineitems}
 
 
 Apply a zero-phase filter to data in \sphinxstylestrong{S.x}.
 
-
-\begin{fulllineitems}
-\pysigline{\sphinxbfcode{\sphinxupquote{filtfilt!(Ev::SeisEvent{[};~KWs{]})}}}
-\end{fulllineitems}
-
-
-Apply zero-phase filter to \sphinxstylestrong{Ev.data.x}.
+Irregularly-sampled data are never affected by filtfilt!.
 
 
 \begin{fulllineitems}
@@ -1352,13 +1344,12 @@ Apply zero-phase filter to \sphinxstylestrong{Ev.data.x}.
 \end{fulllineitems}
 
 
-Apply zero-phase filter to \sphinxstylestrong{C.x}
+Apply zero-phase filter to \sphinxstylestrong{C.x}. Filtering is applied to each contiguous data
+segment in C separately.
 
-Filtering is applied to each contiguous data segment of each channel separately.
-
-\#\#\# Keywords
-Keywords control filtering behavior; specify e.g. filtfilt!(S, fl=0.1, np=2, rt=”Lowpass”).
-Default values can be changed by adjustin the {\hyperref[\detokenize{src/Appendices/keywords:dkw}]{\sphinxcrossref{\DUrole{std,std-ref}{shared keywords}}}}, e.g.,
+\#\#\# Filtering Keywords
+Keywords control filtering behavior; specify e.g. filtfilt!(S, fl=0.1, np=2).
+Default values can be changed by adjusting the {\hyperref[\detokenize{src/Appendices/keywords:dkw}]{\sphinxcrossref{\DUrole{std,std-ref}{shared keywords}}}}, e.g.,
 SeisIO.KW.Filt.np = 2 changes the default number of poles to 2.
 
 
@@ -1376,13 +1367,22 @@ Type
 Description
 \\
 \hline
+chans
+&
+{[}{]}
+&
+$^{\text{(a)}}$
+&
+channel numbers to filter
+\\
+\hline
 fl
 &
 1.0
 &
 Float64
 &
-lower corner frequency {[}Hz{]} $^{\text{(a)}}$
+lower corner frequency {[}Hz{]} $^{\text{(b)}}$
 \\
 \hline
 fh
@@ -1391,7 +1391,7 @@ fh
 &
 Float64
 &
-upper corner frequency {[}Hz{]} $^{\text{(a)}}$
+upper corner frequency {[}Hz{]} $^{\text{(b)}}$
 \\
 \hline
 np
@@ -1443,46 +1443,89 @@ design mode (name of filter)
 \par
 \sphinxattableend\end{savenotes}
 
-$^{\text{(a)}}$  By convention, the lower corner frequency (fl) is used in a Highpass
+$^{\text{(a)}}$  Allowed types are Integer, UnitRange, and Array\{Int64, 1\}.
+$^{\text{(b)}}$  By convention, the lower corner frequency (fl) is used in a Highpass
 filter, and fh is used in a Lowpass filter.
 
 
 \begin{fulllineitems}
-\pysigline{\sphinxbfcode{\sphinxupquote{taper!(S)}}}
+\pysigline{\sphinxbfcode{\sphinxupquote{resample!(S::GphysData~{[},~chans=CC,~fs=FS{]})}}}
 \end{fulllineitems}
 
-
-Cosine taper each channel in S around time gaps.
 
 
 \begin{fulllineitems}
-\pysigline{\sphinxbfcode{\sphinxupquote{unscale!(S{[},~irr=false{]})}}}
+\pysigline{\sphinxbfcode{\sphinxupquote{resample!(C::SeisChannel,~fs::Float64)}}}
 \end{fulllineitems}
 
 
-Divide the gains from all channels \sphinxstylestrong{i} with \sphinxstylestrong{S.fs{[}i{]} \textgreater{} 0.0}. Specify \sphinxstylestrong{irr=true} to
-also remove gains of irregularly-sampled channels.
+Resample data in S to FS Hz. If keyword \sphinxstylestrong{fs} is not specified, data are
+resampled to the lowest non-zero value in \sphinxstylestrong{S.fs{[}CC{]}}. Note that a poor choice
+of fs can lead to upsampling and other bad behaviors.
+
+Use keyword \sphinxstylestrong{chans=CC} to only resample channel numbers \sphinxstylestrong{CC}. By default,
+all channels \sphinxstylestrong{i} with \sphinxstylestrong{S.fs{[}i{]} \textgreater{} 0.0} are resampled.
+
+
+\begin{fulllineitems}
+\pysigline{\sphinxbfcode{\sphinxupquote{taper!(S{[},~chans=CC,~t\_max::Real=10.0,~:math:{}`alpha{}`::Real=0.05,~N\_min::Int64=10{]})}}}
+\end{fulllineitems}
+
+
+Cosine taper each channel in S around time gaps. Specify chans=CC to restrict
+to channel number(s) CC. Does not modify irregularly-sampled data channels.
+
+taper!(C{[}, t\_max::Real=10.0, \(\alpha\)::Real=0.05, N\_min::Int64=10{]})
+
+Cosine taper each segment of time-series data in GphysChannel object C that
+contains at least \sphinxtitleref{N\_min} total samples. Returns if C is irregularly sampled.
+
+Keywords:
+\begin{itemize}
+\item {} 
+chans: Only taper the specified channels.
+
+\item {} 
+N\_min: Data segments with N \textless{} N\_min total samples are not tapered.
+
+\item {} 
+t\_max: Maximum taper edge in seconds.
+
+\item {} 
+\(\alpha\): Taper edge area; as for a Tukey window, the first and last 100*:math:\sphinxtitleref{alpha{}`\% of samples in each window are tapered, up to {}`t\_max} seconds of data.
+
+\end{itemize}
+
+
+\begin{fulllineitems}
+\pysigline{\sphinxbfcode{\sphinxupquote{unscale!(S{[},~chans=CC,~irr=false{]})}}}
+\end{fulllineitems}
+
+
+Divide the gains from all channels \sphinxstylestrong{i} with \sphinxstylestrong{S.fs{[}i{]} \textgreater{} 0.0}. Specify
+chans=CC to restrict to channel number(s) CC. Specify \sphinxstylestrong{irr=true} to also
+remove gains of irregularly-sampled channels.
 
 
 \subsection{Merge}
 \label{\detokenize{src/Processing/processing:merge}}\label{\detokenize{src/Processing/processing:id1}}
 
 \begin{fulllineitems}
-\pysigline{\sphinxbfcode{\sphinxupquote{merge!(S::SeisData,~U::SeisData)}}}
+\pysigline{\sphinxbfcode{\sphinxupquote{merge!(S::GphysData,~U::GphysData)}}}
 \end{fulllineitems}
 
 
-Merge two SeisData structures. For timeseries data, a single-pass merge-and-prune
+Merge two GphysData structures. For timeseries data, a single-pass merge-and-prune
 operation is applied to value pairs whose sample times are separated by less than
 half the sampling interval.
 
 
 \begin{fulllineitems}
-\pysigline{\sphinxbfcode{\sphinxupquote{merge!(S::SeisData)}}}
+\pysigline{\sphinxbfcode{\sphinxupquote{merge!(S::GphysData)}}}
 \end{fulllineitems}
 
 
-“Flatten” a SeisData structure by merging data from identical channels.
+“Flatten” a GphysData structure by merging data from identical channels.
 
 
 \subsubsection{Merge Behavior}
@@ -1577,7 +1620,7 @@ $^{\text{(b)}}$ Data offset \textgreater{}4 sample intervals are treated as over
 \paragraph{When SeisIO Won’t Merge}
 \label{\detokenize{src/Processing/processing:when-seisio-won-t-merge}}
 SeisIO does \sphinxstylestrong{not} combine data channels if \sphinxstylestrong{any} of the five fields above
-are non-empty and different. For example, if a SeisData object S contains two
+are non-empty and different. For example, if a GphysData object S contains two
 channels, each with id “XX.FOO..BHZ”, but one has fs=100 Hz and the other fs=50 Hz,
 \sphinxstylestrong{merge!} does nothing.
 
@@ -1590,7 +1633,7 @@ can easily leave data in an unusuable state.
 \label{\detokenize{src/Processing/processing:synchronize}}
 
 \begin{fulllineitems}
-\pysigline{\sphinxbfcode{\sphinxupquote{sync!(S::SeisData)}}}
+\pysigline{\sphinxbfcode{\sphinxupquote{sync!(S::GphysData)}}}
 \end{fulllineitems}
 
 
@@ -1599,7 +1642,7 @@ start time in S.
 
 
 \begin{fulllineitems}
-\pysigline{\sphinxbfcode{\sphinxupquote{sync!(S::SeisData{[},~s=ST,~t=EN,~v=VV{]})}}}
+\pysigline{\sphinxbfcode{\sphinxupquote{sync!(S::GphysData{[},~s=ST,~t=EN,~v=VV{]})}}}
 \end{fulllineitems}
 
 
@@ -1647,11 +1690,89 @@ numeric, datetime, and non-reserved strings are treated as for \sphinxtitleref{-
 
 
 \begin{fulllineitems}
-\pysigline{\sphinxbfcode{\sphinxupquote{mseis!(S::SeisData,~U::SeisData,~...)}}}
+\pysigline{\sphinxbfcode{\sphinxupquote{mseis!(S::GphysData,~U::GphysData,~...)}}}
 \end{fulllineitems}
 
 
-Merge multiple SeisData structures into S.
+Merge multiple GphysData structures into S.
+
+
+\subsection{Seismic Instrument Responses}
+\label{\detokenize{src/Processing/processing:seismic-instrument-responses}}
+
+\begin{fulllineitems}
+\pysigline{\sphinxbfcode{\sphinxupquote{translate\_resp!(S,~resp\_new{[},~chans=CC,~wl=g{]})}}}
+\end{fulllineitems}
+
+
+
+\begin{fulllineitems}
+\pysigline{\sphinxbfcode{\sphinxupquote{translate\_resp!(Ch,~resp\_new{[},~wl=g{]})}}}
+\end{fulllineitems}
+
+
+Translate the instrument response of seismic data channels to \sphinxstylestrong{resp\_new}.
+Replaces field \sphinxstylestrong{:resp} with \sphinxstylestrong{resp\_new} for all affected channels.
+
+
+\begin{fulllineitems}
+\pysigline{\sphinxbfcode{\sphinxupquote{remove\_resp!(S,~chans=CC,~wl=g{]})}}}
+\end{fulllineitems}
+
+
+
+\begin{fulllineitems}
+\pysigline{\sphinxbfcode{\sphinxupquote{remove\_resp!(Ch,~wl=g{]})}}}
+\end{fulllineitems}
+
+
+Remove (flatten to DC) the instrument response of \sphinxstylestrong{Ch}, or of seismic data
+channels \sphinxstylestrong{CC} in \sphinxstylestrong{S}. Replaces \sphinxstylestrong{:resp} with the appropriate (all-pass)
+response.
+
+
+\subsubsection{Response Keywords}
+\label{\detokenize{src/Processing/processing:response-keywords}}\begin{itemize}
+\item {} 
+\sphinxstylestrong{C=cha} restricts response translation for GphysData object \sphinxstylestrong{S} to channel(s) \sphinxstylestrong{cha}. Accepts an Integer, UnitRange, or Array\{Int64,1\} argument; does \sphinxstyleemphasis{not} accept string IDs. By default, all seismic data channels in \sphinxstylestrong{S} have their responses translated to \sphinxstylestrong{resp\_new}.
+
+\item {} 
+\sphinxstylestrong{wl=g} sets the waterlevel to g (default: g = eps(Float32) \textasciitilde{} 1.1f-7). The waterlevel is the minimum magnitude (absolute value) of the normalized old frequency response; in other words, if the old frequency response has a maximum magnitude of 1.0, then no response coefficient can be lower than g. This is useful to prevent “divide by zero” errors, but setting it too high will cause errors.
+
+\end{itemize}
+
+
+\paragraph{Precision and Memory Optimization}
+\label{\detokenize{src/Processing/processing:precision-and-memory-optimization}}
+To optimize speed and memory use, instrument response translation maps data to
+Complex\{Float32\} before translation; thus, with Float64 data, there can be
+minor rounding errors.
+
+Instrument responses are also memory-intensive. The minimum memory consumption
+to translate the response of a gapless Float32 SeisChannel object is \textasciitilde{}7x the
+size of the object itself.
+
+More precisely, for an object \sphinxstylestrong{S} (of Type \textless{}: GphysData or GphysChannel),
+translation requires memory \textasciitilde{} 2 kB + the greater of (7x the size of the longest
+Float32 segment, or 3.5x the size of the longest Float64 segment). Translation
+uses four vectors \textendash{} three complex and one real \textendash{} that are updated and
+dynamically resized as the algorithm loops over each segment:
+\begin{itemize}
+\item {} 
+Old response container: Array\{Complex\{Float32,1\}\}(undef, Nx)
+
+\item {} 
+New response container: Array\{Complex\{Float32,1\}\}(undef, Nx)
+
+\item {} 
+Complex data container: Array\{Complex\{Float32,1\}\}(undef, Nx)
+
+\item {} 
+Real frequencies for FFT: Array\{Float32,1\}(undef, Nx)
+
+\end{itemize}
+
+…where \sphinxstylestrong{Nx} is the number of samples in the longest segment in \sphinxstylestrong{S}.
 
 
 \subsection{Other Processing Functions}
@@ -1667,12 +1788,30 @@ of non-NaN values.
 
 
 \begin{fulllineitems}
-\pysigline{\sphinxbfcode{\sphinxupquote{ungap!(S{[},~m=true{]})}}}
+\pysigline{\sphinxbfcode{\sphinxupquote{ungap!(S{[},~chans=CC,~m=true,~tap=false{]})}}}
 \end{fulllineitems}
 
 
-For each channel \sphinxstylestrong{i} in \sphinxstylestrong{S}, fill time gaps in \sphinxstylestrong{S.t{[}i{]}} with the mean of
-non-NAN data in \sphinxstylestrong{S.x{[}i{]}}. If \sphinxstylestrong{m=false}, gaps are filled with NANs.
+
+\begin{fulllineitems}
+\pysigline{\sphinxbfcode{\sphinxupquote{ungap!(C{[},~m=true,~tap=false{]})}}}
+\end{fulllineitems}
+
+
+Fill time gaps in each channel with the mean of the channel data.
+
+Keywords:
+\begin{itemize}
+\item {} 
+chans=CC: only ungap channels CC.
+
+\item {} 
+m=false: this flag fills gaps with NaNs instead of the mean.
+
+\item {} 
+tap=true: taper data before filling gaps.
+
+\end{itemize}
 
 
 \chapter{Submodules}
@@ -1828,7 +1967,7 @@ Returns a SeisEvent.
 \begin{DUlineblock}{0em}
 \item[] {\hyperref[\detokenize{src/Appendices/keywords:dkw}]{\sphinxcrossref{\DUrole{std,std-ref}{Shared keywords}}}}: fmt, mag, nd, opts, pha, rad, reg, src, to, v, w
 \item[] Other keywords:
-\item[] \sphinxcode{\sphinxupquote{-{-}len}}: desired record length \sphinxstyleemphasis{in minutes}.
+\item[] \sphinxcode{\sphinxupquote{len}}: desired record length \sphinxstyleemphasis{in minutes}.
 \end{DUlineblock}
 
 
@@ -1836,7 +1975,7 @@ Returns a SeisEvent.
 \label{\detokenize{src/Submodules/quake:phase-onset-query}}\index{get\_pha() (built-in function)@\spxentry{get\_pha()}\spxextra{built-in function}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{src/Submodules/quake:get_pha}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_pha}}}{\emph{\(\Delta\)::Float64}, \emph{z::Float64}}{}
+\phantomsection\label{\detokenize{src/Submodules/quake:get_pha}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_pha}}}{\emph{:math:{}`Delta{}`::Float64}, \emph{z::Float64}}{}
 \end{fulllineitems}
 
 
@@ -2045,8 +2184,14 @@ Generate N channels of random seismic data as a SeisData object.
 
 
 Generate a SeisEvent structure filled with random values.
-* 100*c\% of channels \sphinxstyleemphasis{after the first} will have irregularly-sampled data (fs = 0.0)
-* 100*s\% of channels \sphinxstyleemphasis{after the first} are guaranteed to have seismic data.
+\begin{itemize}
+\item {} 
+100*c\% of channels \sphinxstyleemphasis{after the first} will have irregularly-sampled data (fs = 0.0)
+
+\item {} 
+100*s\% of channels \sphinxstyleemphasis{after the first} are guaranteed to have seismic data.
+
+\end{itemize}
 
 
 \begin{fulllineitems}
@@ -2158,7 +2303,7 @@ Remove unwanted characters from S.
 \end{fulllineitems}
 
 
-Convert times \sphinxstylestrong{s} and \sphinxstylestrong{t} to strings \(\alpha\), \(\omega\) sorted \(\alpha\) \textless{} \(\omega\).
+Convert times \sphinxstylestrong{s} and \sphinxstylestrong{t} to strings \(\alpha, \omega\) sorted \(\alpha < \omega\).
 \sphinxstylestrong{s} and \sphinxstylestrong{t} can be real numbers, DateTime objects, or ASCII strings.
 Expected string format is “yyyy-mm-ddTHH:MM:SS.nnn”, e.g. 2016-03-23T11:17:00.333.
 
@@ -2174,7 +2319,7 @@ Alias to \sphinxcode{\sphinxupquote{Dates.unix2datetime}}.
 
 function:: w\_time(W::Array\{Int64,2\}, fs::Float64)
 
-Convert matrix W from time windows (w{[}:,1{]}:w{[}:,2{]}) in integer \(\mu\)s from the Unix epoch (1970-01-01T00:00:00) to sparse delta-encoded time representation. Specify fs in Hz.
+Convert matrix W from time windows (w{[}:,1{]}:w{[}:,2{]}) in integer \(\mu s\) from the Unix epoch (1970-01-01T00:00:00) to sparse delta-encoded time representation. Specify fs in Hz.
 
 
 \section{SeisIO Write Formats}
@@ -2312,7 +2457,7 @@ strings that contain the null character (0x00 or \sphinxcode{\sphinxupquote{'\te
 
 \begin{savenotes}\sphinxattablestart
 \centering
-\begin{tabular}[t]{|\X{5}{47}|\X{32}{47}|\X{5}{47}|\X{5}{47}|}
+\begin{tabular}[t]{|\X{4}{52}|\X{32}{52}|\X{8}{52}|\X{8}{52}|}
 \hline
 \sphinxstyletheadfamily 
 Var
@@ -2894,8 +3039,9 @@ A vector of variable-length strings; its exact Type in Julia is Array\{String,1\
 \begin{savenotes}\sphinxattablestart
 \centering
 \sphinxcapstartof{table}
+\sphinxthecaptionisattop
 \sphinxcaption{StringVec}\label{\detokenize{src/Appendices/seisio_file_format:id17}}
-\sphinxaftercaption
+\sphinxaftertopcaption
 \begin{tabular}[t]{|\X{1}{11}|\X{1}{11}|\X{1}{11}|\X{8}{11}|}
 \hline
 \sphinxstyletheadfamily 
@@ -3359,7 +3505,7 @@ how this field is written to disk.
 
 \begin{savenotes}\sphinxattablestart
 \centering
-\begin{tabular}[t]{|\X{1}{11}|\X{1}{11}|\X{1}{11}|\X{8}{11}|}
+\begin{tabular}[t]{|\X{1}{12}|\X{2}{12}|\X{1}{12}|\X{8}{12}|}
 \hline
 \sphinxstyletheadfamily 
 Var
@@ -3434,7 +3580,7 @@ These subtables describe how to read the possible data types in a Misc dictionar
 
 \begin{savenotes}\sphinxattablestart
 \centering
-\begin{tabular}[t]{|\X{1}{11}|\X{1}{11}|\X{1}{11}|\X{8}{11}|}
+\begin{tabular}[t]{|\X{1}{12}|\X{2}{12}|\X{1}{12}|\X{8}{12}|}
 \hline
 \sphinxstyletheadfamily 
 Var
@@ -3465,7 +3611,7 @@ string vector
 
 \begin{savenotes}\sphinxattablestart
 \centering
-\begin{tabular}[t]{|\X{1}{11}|\X{1}{11}|\X{1}{11}|\X{8}{11}|}
+\begin{tabular}[t]{|\X{1}{12}|\X{1}{12}|\X{2}{12}|\X{8}{12}|}
 \hline
 \sphinxstyletheadfamily 
 Var
@@ -3589,11 +3735,23 @@ If \sphinxcode{\sphinxupquote{N == 0}}, then N is the only value present.
 \end{footnote}
 \\
 \hline
-K, (StringVec), 1, dictionary keys
-&&&\\
+K
+&
+(StringVec)
+&
+1
+&
+dictionary keys
+\\
 \hline
-pha, (SeisPha), N, seismic phases
-&&&\\
+pha
+&
+(SeisPha)
+&
+N
+&
+seismic phases
+\\
 \hline
 \end{tabular}
 \par
@@ -3607,7 +3765,7 @@ A single channel of data related to a seismic event
 
 \begin{savenotes}\sphinxattablestart
 \centering
-\begin{tabular}[t]{|\X{1}{11}|\X{1}{11}|\X{1}{11}|\X{8}{11}|}
+\begin{tabular}[t]{|\X{1}{12}|\X{2}{12}|\X{1}{12}|\X{8}{12}|}
 \hline
 \sphinxstyletheadfamily 
 Var
@@ -3812,7 +3970,7 @@ T
 &
 Int64
 &
-2*Nt
+2Nt
 &
 time gaps matrix
 \\
@@ -3857,7 +4015,7 @@ A single channel of univariate geophysical data
 
 \begin{savenotes}\sphinxattablestart
 \centering
-\begin{tabular}[t]{|\X{1}{11}|\X{1}{11}|\X{1}{11}|\X{8}{11}|}
+\begin{tabular}[t]{|\X{1}{12}|\X{2}{12}|\X{1}{12}|\X{8}{12}|}
 \hline
 \sphinxstyletheadfamily 
 Var
@@ -4026,7 +4184,7 @@ T
 &
 Int64
 &
-2*Nt
+2Nt
 &
 time gaps matrix
 \\
@@ -4072,7 +4230,7 @@ A multichannel record of time-series data related to a seismic event.
 
 \begin{savenotes}\sphinxattablestart
 \centering
-\begin{tabular}[t]{|\X{1}{11}|\X{1}{11}|\X{1}{11}|\X{8}{11}|}
+\begin{tabular}[t]{|\X{1}{12}|\X{2}{12}|\X{1}{12}|\X{8}{12}|}
 \hline
 \sphinxstyletheadfamily 
 Var
@@ -4286,7 +4444,7 @@ T
 &
 Int64
 &
-2*Nt{[}i{]}
+2Nt{[}i{]}
 &
 Matrix of time gaps for channel i
 \\
@@ -4329,7 +4487,7 @@ A record containing multiple channels of univariate geophysical data.
 
 \begin{savenotes}\sphinxattablestart
 \centering
-\begin{tabular}[t]{|\X{1}{11}|\X{1}{11}|\X{1}{11}|\X{8}{11}|}
+\begin{tabular}[t]{|\X{1}{12}|\X{2}{12}|\X{1}{12}|\X{8}{12}|}
 \hline
 \sphinxstyletheadfamily 
 Var
@@ -4507,7 +4665,7 @@ T
 &
 Int64
 &
-2*Nt{[}i{]}
+2Nt{[}i{]}
 &
 Matrix of time gaps for channel i
 \\
@@ -4699,7 +4857,7 @@ event type string
 
 \begin{savenotes}\sphinxattablestart
 \centering
-\begin{tabular}[t]{|\X{1}{12}|\X{2}{12}|\X{1}{12}|\X{8}{12}|}
+\begin{tabular}[t]{|\X{1}{13}|\X{2}{13}|\X{2}{13}|\X{8}{13}|}
 \hline
 \sphinxstyletheadfamily 
 Var
@@ -5427,7 +5585,7 @@ The table below specifies valid types and expected syntax for channel lists.
 
 \begin{savenotes}\sphinxattablestart
 \centering
-\begin{tabular}[t]{|*{3}{\X{1}{3}|}}
+\begin{tabular}[t]{|\X{4}{20}|\X{8}{20}|\X{8}{20}|}
 \hline
 \sphinxstyletheadfamily 
 Type
@@ -5439,29 +5597,26 @@ Example
 \hline
 String
 &
-Comma-delineated
-list of IDs
+Comma-delineated list of IDs
 &
-“PB.B004.01.BS1,PB.B002.01.BS1”
+“PB.B004.01.BS1, PB.B002.01.BS1”
 \\
 \hline
 Array\{String,1\}
 &
-String array, one
-ID string per entry
+String array, one ID string per entry
 &
-{[}“PB.B004.01.BS1”,”PB.B002.01.BS1”{]}
+{[}“PB.B004.01.BS1”, “PB.B002.01.BS1”{]}
 \\
 \hline
 Array\{String,2\}
 &
-String array, one
-ID string per row
-&\begin{description}
-\item[{{[}“PB” “B004” “01” “BS1”;}] \leavevmode
+String array, one set of IDs per row
+&
+{[}“PB” “B004” “01” “BS1”;
+\\
+\hline&&
 “PB” “B002” “01” “BS1”{]}
-
-\end{description}
 \\
 \hline
 \end{tabular}
@@ -5502,7 +5657,6 @@ Partial specifiers are OK, but a network and station are always required: \sphin
 \label{\detokenize{src/Appendices/web_syntax:channel-configuration-files}}\label{\detokenize{src/Appendices/web_syntax:ccfg}}
 One entry per line, ASCII text, format NN.SSSSS.LL.CCC.D. Due to client-specific wildcard rules, the most versatile configuration files are those that specify each channel most completely:
 
-\fvset{hllines={, ,}}%
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYGZsh{} This only works with SeedLink
 GE.ISP..BH?.D
@@ -6026,7 +6180,6 @@ exit on error?
 \label{\detokenize{src/Appendices/examples:fdsn-data-query}}
 1. Download 10 minutes of data from four stations at Mt. St. Helens (WA, USA), delete the low-gain channels, and save as SAC files in the current directory.
 
-\fvset{hllines={, ,}}%
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYG{n}{S} \PYG{o}{=} \PYG{n}{get\PYGZus{}data}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{FDSN}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{CC.VALT, UW.SEP, UW.SHW, UW.HSR}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{n}{src}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{IRIS}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{n}{t}\PYG{o}{=}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{600}\PYG{p}{)}
 \PYG{n}{S} \PYG{o}{\PYGZhy{}}\PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{SHW.ELZ..UW}\PYG{l+s+s2}{\PYGZdq{}}
@@ -6036,7 +6189,6 @@ exit on error?
 
 2. Get 5 stations, 2 networks, all channels, last 600 seconds of data at IRIS
 
-\fvset{hllines={, ,}}%
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYG{n}{CHA} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{CC.PALM, UW.HOOD, UW.TIMB, CC.HIYU, UW.TDH}\PYG{l+s+s2}{\PYGZdq{}}
 \PYG{n}{TS} \PYG{o}{=} \PYG{n}{u2d}\PYG{p}{(}\PYG{n}{time}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
@@ -6046,7 +6198,6 @@ exit on error?
 
 3. A request to FDSN Potsdam, time-synchronized, with some verbosity
 
-\fvset{hllines={, ,}}%
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYG{n}{ts} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{2011\PYGZhy{}03\PYGZhy{}11T06:00:00}\PYG{l+s+s2}{\PYGZdq{}}
 \PYG{n}{te} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{2011\PYGZhy{}03\PYGZhy{}11T06:05:00}\PYG{l+s+s2}{\PYGZdq{}}
@@ -6058,7 +6209,6 @@ exit on error?
 \label{\detokenize{src/Appendices/examples:fdsn-station-query}}
 A sample FDSN station query
 
-\fvset{hllines={, ,}}%
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYG{n}{S} \PYG{o}{=} \PYG{n}{FDSNsta}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{CC.VALT..,PB.B001..BS?,PB.B001..E??}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
 \end{sphinxVerbatim}
@@ -6068,7 +6218,6 @@ A sample FDSN station query
 \label{\detokenize{src/Appendices/examples:fdsn-event-header-data-query}}
 Get seismic and strainmeter records for the P-wave of the Tohoku-Oki great earthquake on two borehole stations and write to native SeisData format:
 
-\fvset{hllines={, ,}}%
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYG{n}{S} \PYG{o}{=} \PYG{n}{FDSNevt}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{201103110547}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{PB.B004..EH?,PB.B004..BS?,PB.B001..BS?,PB.B001..EH?}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
 \PYG{n}{wseis}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{201103110547\PYGZus{}evt.seis}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{n}{S}\PYG{p}{)}
@@ -6087,7 +6236,6 @@ Get trace data from IRISws from \sphinxcode{\sphinxupquote{TS}} to \sphinxcode{\
 
 \end{enumerate}
 
-\fvset{hllines={, ,}}%
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 S = SeisData()
 CHA = \PYGZdq{}UW.TDH..EHZ, UW.VLL..EHZ, CC.VALT..BHZ\PYGZdq{}
@@ -6098,7 +6246,6 @@ get\PYGZus{}data!(S, \PYGZdq{}IRIS\PYGZdq{}, CHA, s=TS, t=TT)
 
 2. Get synchronized trace data from IRISws with a 55-second timeout on HTTP requests, written directly to disk.
 
-\fvset{hllines={, ,}}%
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYG{n}{CHA} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{UW.TDH..EHZ, UW.VLL..EHZ, CC.VALT..BHZ}\PYG{l+s+s2}{\PYGZdq{}}
 \PYG{n}{TS} \PYG{o}{=} \PYG{n}{u2d}\PYG{p}{(}\PYG{n}{time}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
@@ -6108,7 +6255,6 @@ get\PYGZus{}data!(S, \PYGZdq{}IRIS\PYGZdq{}, CHA, s=TS, t=TT)
 
 3. Request 10 minutes of continuous vertical-component data from a small May 2016 earthquake swarm at Mt. Hood, OR, USA:
 
-\fvset{hllines={, ,}}%
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYG{n}{STA} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{UW.HOOD.\PYGZhy{}\PYGZhy{}.BHZ,CC.TIMB.\PYGZhy{}\PYGZhy{}.EHZ}\PYG{l+s+s2}{\PYGZdq{}}
 \PYG{n}{TS} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{2016\PYGZhy{}05\PYGZhy{}16T14:50:00}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{;} \PYG{n}{TE} \PYG{o}{=} \PYG{l+m+mi}{600}
@@ -6117,7 +6263,6 @@ get\PYGZus{}data!(S, \PYGZdq{}IRIS\PYGZdq{}, CHA, s=TS, t=TT)
 
 4. Grab data from a predetermined time window in two different formats
 
-\fvset{hllines={, ,}}%
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYG{n}{ts} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{2016\PYGZhy{}03\PYGZhy{}23T23:10:00}\PYG{l+s+s2}{\PYGZdq{}}
 \PYG{n}{te} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{2016\PYGZhy{}03\PYGZhy{}23T23:17:00}\PYG{l+s+s2}{\PYGZdq{}}
@@ -6130,7 +6275,6 @@ get\PYGZus{}data!(S, \PYGZdq{}IRIS\PYGZdq{}, CHA, s=TS, t=TT)
 \label{\detokenize{src/Appendices/examples:seedlink-sessions}}
 1. An attended SeedLink session in DATA mode. Initiate a SeedLink session in DATA mode using config file SL.conf and write all packets received directly to file (in addition to parsing to S itself). Set nominal refresh interval for checking for new data to 10 s. A mini-seed file will be generated automatically.
 
-\fvset{hllines={, ,}}%
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 S = SeisData()
 SeedLink!(S, \PYGZdq{}SL.conf\PYGZdq{}, mode=\PYGZdq{}DATA\PYGZdq{}, r=10, w=true)
@@ -6138,7 +6282,6 @@ SeedLink!(S, \PYGZdq{}SL.conf\PYGZdq{}, mode=\PYGZdq{}DATA\PYGZdq{}, r=10, w=tru
 
 2. An unattended SeedLink download in TIME mode. Get the next two minutes of data from stations GPW, MBW, SHUK in the UW network. Put the Julia REPL to sleep while the request fills. If the connection is still open, close it (SeedLink’s time bounds arent precise in TIME mode, so this may or may not be necessary). Pause briefly so that the last data packets are written. Synchronize results and write data in native SeisIO file format.
 
-\fvset{hllines={, ,}}%
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 sta = \PYGZdq{}UW.GPW,UW.MBW,UW.SHUK\PYGZdq{}
 s0 = now()
@@ -6153,7 +6296,6 @@ wseis(fname, S)
 
 3. A SeedLink session in TIME mode
 
-\fvset{hllines={, ,}}%
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYG{n}{sta} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{UW.GPW, UW.MBW, UW.SHUK}\PYG{l+s+s2}{\PYGZdq{}}
 \PYG{n}{S1} \PYG{o}{=} \PYG{n}{SeedLink}\PYG{p}{(}\PYG{n}{sta}\PYG{p}{,} \PYG{n}{mode}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{TIME}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{n}{s}\PYG{o}{=}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{t}\PYG{o}{=}\PYG{l+m+mi}{120}\PYG{p}{)}
@@ -6161,7 +6303,6 @@ wseis(fname, S)
 
 4. A SeedLink session in DATA mode with multiple servers, including a config file. Data are parsed roughly every 10 seconds. A total of 5 minutes of data are requested.
 
-\fvset{hllines={, ,}}%
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 sta = [\PYGZdq{}CC.SEP\PYGZdq{}, \PYGZdq{}UW.HDW\PYGZdq{}]
 \PYGZsh{} To ensure precise timing, we\PYGZsq{}ll pass d0 and d1 as strings

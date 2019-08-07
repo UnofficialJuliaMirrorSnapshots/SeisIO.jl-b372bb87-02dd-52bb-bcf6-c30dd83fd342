@@ -2,6 +2,7 @@
 # BUF           src/Types/SeisIOBuf.jl
 # KW            src/Types/KWDefs.jl
 # PhaseCat      src/Types/Quake/PhaseCat.jl
+# flat_resp     src/Types/InstResp.jl
 # type_codes    src/Types/Methods/0_type_codes.jl
 
 # Type aliases
@@ -56,11 +57,12 @@ const sac_nul_i = Int32(-12345)
 const sac_nul_start = 0x2d
 const sac_nul_Int8 = UInt8[0x31, 0x32, 0x33, 0x34, 0x35]
 const segy_ftypes  = Array{DataType, 1}([UInt32, Int32, Int16, Any, Float32, Any, Any, Int8]) # Note: type 1 is IBM Float32
+const seis_inst_codes = ('H', 'J', 'L', 'M', 'N', 'P', 'Z')
 const seisio_file_begin = UInt8[0x53, 0x45, 0x49, 0x53, 0x49, 0x4f]
 const sep = Base.Filesystem.pathsep()
 const steim = reverse(collect(0x00000000:0x00000002:0x0000001e), dims=1)
 const sμ = 1000000.0
 const vSeisIO = Float32(0.5)
 const unindexed_fields = (:c, :n)
-const webhdr = Dict("UserAgent" => "Julia-SeisIO-FSDN.jl/0.2.0")
+const webhdr = Dict("UserAgent" => "Julia-SeisIO-FSDN.jl/0.3.0")
 const μs = 1.0e-6

@@ -35,8 +35,17 @@ deleteat!(S, findall(S.fs.<25.0))
 filtfilt!(S, fl=0.01, fh=10.0)
 
 # Ensure station headers are set
-j = findid(S, "UW.HOOD..ENE")
-@test ≈(S.fs[j], 100.0)
+ids = ["UW.HOOD..ENE", "CC.VALT..BHZ", "UW.TDH..EHZ", "UW.VLL.EHZ"]
+fss = [100.0, 50.0, 100.0, 100.0]
+codes = ['N', 'H', 'H', 'H']
+for i = 1:4
+  j = findid(S, ids[i])
+  if j > 0
+    @test ≈(S.fs[j], fss[i])
+    @test inst_code(S, j) == codes[i]
+    break
+  end
+end
 
 # Ensure we got data
 L = [length(x) for x in S.x]
@@ -50,7 +59,13 @@ get_data!(S, "FDSN", ["UW.HOOD..E??", "CC.VALT..???", "UW.XNXNX.99.QQQ"], src="I
 
 # Try a single string
 printstyled("      string for channel spec\n", color=:light_green)
-S = get_data("FDSN", "CC.JRO..BHZ,IU.COLA.00.*", src="IRIS", s=-600, t=0)
+S = get_data("FDSN", "CC.JRO..BHZ,IU.COLA.00.*", src="IRIS", s=-600, t=0, v=1,
+  demean=true,
+  detrend=true,
+  rr=true,
+  taper=true,
+  ungap=true,
+  unscale=true)
 
 # This should return exactly 4 days of data, which we know IRIS' FDSN server has
 printstyled("      multi-day request\n", color=:light_green)

@@ -83,10 +83,10 @@ function getyp2codes(b::Char, s=false::Bool)
       u = "%"
     elseif i == 'J' # rotational seismometer
       c = rand(['Z','N','E','A','B','C','T','R','1','2','3','U','V','W'])
-      u = rand(["rad", "rad/s", "rad/s^2"])
+      u = rand(["rad", "rad/s", "rad/s2"])
     elseif i == 'K' # thermal (thermometer or radiometer)
       c = rand(['O', 'I', 'D'])
-      u = rand(["C","K"])
+      u = rand(["Cel","K"])
     elseif i == 'M' # mass position sensor
         c = rand(['A','B','C','1','2','3','U','V','W'])
         u = "m"
@@ -110,13 +110,13 @@ function getyp2codes(b::Char, s=false::Bool)
       u = "m"
     elseif i == 'U' # bolometer
       c = '_'
-      u = "(% cloud cover)"
+      u = "%{cloud_cover}"
     elseif i == 'V' # volumetric strainmeter
       c = '_'
-      u = "m^3/m^3"
+      u = "m3/m3"
     elseif i == 'W' # wind speed ('S') or direction ('D')
       c = rand(['S','D'])
-      u = c == 'S' ? "m/s" : "(direction vector)"
+      u = c == 'S' ? "m/s" : "{direction_vector}"
 
     # X, Y are instrument-specific...excluded
 

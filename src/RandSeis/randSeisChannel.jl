@@ -2,7 +2,7 @@
 function randResp(n::Int64=0)
   if n > 0
     T = Float64
-    i = n
+    i = max(1, div(n,2))
   else
     T = rand() < 0.5 ? Float32 : Float64
     i = rand(2:2:8)
@@ -10,9 +10,9 @@ function randResp(n::Int64=0)
   zstub = zeros(T, 2*i)
   pstub = 10 .*rand(T, i)
   if T == Float32
-    resp = PZResp(1.0f0, 1.0f0, complex.(zstub), vcat(pstub .+ pstub.*im, pstub .- pstub*im))    # resp
+    resp = PZResp(a0 = 1.0f0, f0 = 1.0f0, p = vcat(pstub .+ pstub.*im, pstub .- pstub*im), z = complex.(zstub))    # resp
   else
-    resp = PZResp64(1.0, 1.0, complex.(zstub), vcat(pstub .+ pstub.*im, pstub .- pstub*im))    # resp
+    resp = PZResp64(a0 = 1.0, f0 = 1.0, p = vcat(pstub .+ pstub.*im, pstub .- pstub*im), z = complex.(zstub))    # resp
   end
   return resp
 end
@@ -87,8 +87,6 @@ end
 
 # Populate a channel with irregularly-sampled (campaign-style) data
 function populate_irr!(Ch::SeisChannel; nx::Int64=0)
-  irregular_units = ["%", "(% cloud cover)", "(direction vector)", "C", "K", "None", "Pa", "T", "V", "W", "m", "m/m", "m/s", "m/s2", "m3/m3", "rad", "rad/s", "rad/s2", "tonnes SO2"]
-
   chan = "OY"*randstring('A':'Z',1)
   net = ur2()
   sta = uppercase(randstring('A':'Z', rand(1:5)))

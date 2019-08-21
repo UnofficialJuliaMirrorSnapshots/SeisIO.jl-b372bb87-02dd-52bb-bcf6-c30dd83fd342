@@ -3,6 +3,31 @@ The current set of updates, leading to v0.4.0, will focus on:
 2. expanded file format support
 3. expanded data acquisition options
 
+### 2019-08-19
+* `tx_float` now always uses Float64 precision; Float32 lacks the resolution
+to handle long time series.
+* `detrend!` now uses linear regression on gapless channels with `:fs > 0.0`
+when `n=1`, yielding a 12x speedup and >99% less memory use.
+* added `env!` to efficiently compute the signal envelope by segment within
+each (regularly-sampled) channel.
+
+### 2019-08-14
+* `read_data("passcal", ..., swap=true)` now reads big-endian PASSCAL SEG Y.
+
+### 2019-08-13
+#### New, Changed, Deprecated
+* Added `vucum(str)` and `validate_units(S)` to validate strings for `:units`.
+
+### Bugs, Consistency, Performance
+* `detrend!`
+  + `detrend!(..., n=N)` now allows degree n=0, equivalent to `demean!`.
+  + slightly reduced memory consumption.
+  + greatly increased accuracy at single precision.
+* `get_data`
+  + now correctly defaults to `unscale=false` and `ungap=false`.
+* `convert_seis!` converts seismograms in `S` to other units (m, m/s, m/s²) by
+differentiation or integration.
+
 ### 2019-08-05
 #### New, Changed, Deprecated
 * Most processing functions now accept a numeric channel list using keyword

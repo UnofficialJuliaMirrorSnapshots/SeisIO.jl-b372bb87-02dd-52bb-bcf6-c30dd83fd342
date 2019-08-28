@@ -84,6 +84,15 @@ for i in ls(path*"/Web/")
 end
 
 # =========================================================
+# Submodules
+include("Submodules/Formats.jl")
+import .Formats: formats
+include("Submodules/Quake.jl")
+include("Submodules/RandSeis.jl")
+include("Submodules/SUDS.jl")
+include("Submodules/UW.jl")
+
+# =========================================================
 # Wrappers
 for i in ls(path*"/Wrappers/")
   if endswith(i, ".jl")
@@ -91,17 +100,16 @@ for i in ls(path*"/Wrappers/")
   end
 end
 
-# =========================================================
-# Submodules
-include("Quake/Quake.jl")
-include("RandSeis/RandSeis.jl")
-
 # We need these types for the native file format
 using .Quake: EQLoc, EQMag, EventChannel, EventTraceData, PhaseCat, SeisEvent, SeisHdr, SeisPha, SeisSrc, SourceTime
+formats["list"] = collect(keys(formats))
+export formats
 
 # Last steps
 include("Last/splat.jl")
 include("Last/native_file_io.jl")
+include("Last/read_legacy.jl")
+include("Last/set_file_ver.jl")
 
 # Module ends
 end

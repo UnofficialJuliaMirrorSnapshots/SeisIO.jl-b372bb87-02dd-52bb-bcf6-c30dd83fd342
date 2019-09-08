@@ -1,6 +1,7 @@
 fname = path*"/SampleFiles/fdsn.conf"
 hood_reg = Float64[44.8, 46.0, -122.4, -121.0]
 rainier_rad = Float64[46.852886, -121.760374, 0.0, 0.1]
+sac_pz_file = path*"/SampleFiles/test_sac.pz"
 
 printstyled("  FDSN web requests\n", color=:light_green)
 
@@ -10,6 +11,9 @@ S = FDSNsta("CC.VALT..,PB.B001..BS?,PB.B001..E??")
 @test (findid(S, "PB.B001.T0.BS1")>0)
 @test (findid(S, "PB.B001..EHZ")>0)
 @test (findid(S, "CC.VALT..BHZ")>0)
+
+# FDSNsta with MultiStageResp
+S = FDSNsta("CC.VALT..,PB.B001..BS?,PB.B001..E??", msr=true)
 
 printstyled("      radius search (rad=)\n", color=:light_green)
 rad = Float64[45.373514, -121.695919, 0.0, 0.1]
@@ -47,10 +51,30 @@ for i = 1:4
   end
 end
 
+# Check that headers get overwritten with SACPZ info when we use read_sacpz
+Nc = S.n
+read_sacpz!(S, sac_pz_file)
+@test S.n > Nc
+i = findid("CC.VALT..BHZ", S)
+if i > 0
+  @test S.misc[i]["OUTPUT UNIT"] == "COUNTS"
+end
+i = findid("UW.HOOD..ENE", S)
+if i > 0
+  @test S.misc[i]["INSTTYPE"] == "ES-T-3339=Q330S+-6410"
+end
+
 # Ensure we got data
 L = [length(x) for x in S.x]
 if isempty(L) == false
   @test (maximum(L) > 0)
+end
+
+# Check that msr=true works
+S = SeisData()
+get_data!(S, "FDSN", fname, src="IRIS", msr=true, s=-600, t=0)
+for i in 1:S.n
+  @test typeof(S.resp[i]) == MultiStageResp
 end
 
 # Try a string array for input

@@ -23,7 +23,9 @@ redirect_stdout(out) do
   @test isempty(L)
   @test hash(L) == hash(UTMLoc())
   @test L == UTMLoc()
-  sizeof(L) > 114
+  @test sizeof(L) == 114
+  L2 = UTMLoc(datum="NAD83")
+  @test isequal(L, L2) == false
 
   L = XYLoc()
   show(stdout, L)
@@ -34,20 +36,20 @@ redirect_stdout(out) do
   @test !isempty(L)
   @test !(L == UTMLoc())
   @test sizeof(L) > 136
+  L2 = XYLoc()
+  @test isequal(L, L2) == false
 
   L = EQLoc()
   show(stdout, L)
   @test isempty(L)
   @test hash(L) == hash(EQLoc())
   @test L == EQLoc()
-  sizeof(L) > 114
+  @test sizeof(L) > 114
 end
 
 # Responses
 printstyled("  InstrumentResponse\n", color=:light_green)
 redirect_stdout(out) do
-  @test isempty(GenResp())
-
   v = 1.0 + 1.0*im
   X = rand(12,3)
   Y = rand(12,3)
@@ -61,9 +63,21 @@ redirect_stdout(out) do
   R[4,2] = 1.0
   @test getindex(R.resp, 3) == v == getindex(R, 3, 1)
   @test real(getindex(R.resp, 4, 2)) == 1.0
-
   show(stdout, R)
-  repr(R, context=:compact=>true)
+
+  for T in (CoeffResp, GenResp, MultiStageResp, PZResp, PZResp64)
+    R = T()
+    @test isempty(R) == true
+    show(stdout, R)
+    repr(R, context=:compact=>true)
+    repr(R, context=:compact=>false)
+
+    R2 = T()
+    @test R == R2
+    @test hash(R) == hash(R2)
+    @test code2resptyp(resptyp2code(R)) == T
+    @test sizeof(R) == sizeof(R2)
+  end
 end
 
 # Seismic phases

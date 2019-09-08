@@ -16,6 +16,9 @@ uw = path*"/SampleFiles/" .* ["00012502123W", "99011116541W"]
 geocsv1 = path*"/SampleFiles/FDSNWS.IRIS.geocsv"
 geocsv2 = path*"/SampleFiles/geocsv_slist.csv"
 lennf = path*"/SampleFiles/0215162000.c00"
+xml_stfile = path*"/SampleFiles/fdsnws-station_2017-01-12T03-17-42Z.xml"
+resp_file = path*"/SampleFiles/RESP.cat"
+self = path*"/Utils/test_guess.jl"
 
 redirect_stdout(out) do
   @test guess(ah1f, v=3) == ("ah1", true)
@@ -31,6 +34,9 @@ end
 @test guess(geocsv1) == ("geocsv", false)
 @test guess(geocsv2) == ("geocsv.slist", false)
 @test guess(lennf) == ("lennasc", false)
+@test guess(xml_stfile) == ("sxml", false)
+@test guess(resp_file) == ("resp", false)
+@test guess(self) == ("unknown", false)
 
 # Restricted files
 if safe_isdir(path*"/SampleFiles/Restricted")
@@ -92,6 +98,8 @@ z = get(Sg.misc[1], "rec_ele", 0.0)
 
 St = SeisData()
 read_data!(St, segy_file_1, full=true)
-Su = SeisData()
-read_data!(Su, path * "/SampleFiles/test_PASSCAL.seg*", full=true)
-@test Sg == St == Su
+if Sys.iswindows() == false
+  Su = SeisData()
+  read_data!(Su, path * "/SampleFiles/test_PASSCAL.seg*", full=true)
+  @test Sg == St == Su
+end

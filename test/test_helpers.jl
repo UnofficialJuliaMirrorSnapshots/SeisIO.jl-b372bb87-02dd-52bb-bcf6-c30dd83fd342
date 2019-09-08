@@ -7,10 +7,12 @@ import SeisIO: BUF, FDSN_sta_xml,
   fillx_i16_le!, fillx_i32_be!, fillx_i32_le!, findhex, get_HTTP_req,
   get_http_post, get_views, int2tstr, mean, minreq!,
   mktaper!, mktime, parse_charr, parse_chstr, parse_sl,
+  read_sacpz!, read_sacpz, read_seed_resp!, read_seed_resp,
   safe_isdir, safe_isfile, sep, sμ, t_collapse,
   t_expand, t_win, taper_seg!, tnote, tstr2int, w_time, webhdr,
   xtmerge!, μs,
   diff_x!, int_x!,
+  code2resptyp, resptyp2code,
   poly, polyval, polyfit
 import SeisIO.RandSeis: getyp2codes, pop_rand_dict!
 import SeisIO.Quake: unsafe_convert
@@ -169,6 +171,14 @@ function breaking_seis()
   # Responses
   S.resp[1] = GenResp()
   S.resp[2] = PZResp()
+  S.resp[3] = MultiStageResp(6)
+  S.resp[3].stage[1] = CoeffResp()
+  S.resp[3].stage[2] = PZResp()
+  S.resp[3].gain[1] = 3.5e15
+  S.resp[3].fs[1] = 15.0
+  S.resp[3].stage[1].b = randn(Float64, 120)
+  S.resp[3].stage[1].i = "{counts}"
+  S.resp[3].stage[1].o = "m/s"
 
   S.x[4] = rand(Float64,4)
   S.t[4] = vcat(S.t[4][1:1,:], [4 0])

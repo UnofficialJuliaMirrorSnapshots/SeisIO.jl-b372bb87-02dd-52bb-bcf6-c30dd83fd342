@@ -73,8 +73,11 @@ printstyled("  test that every custom Type can be written and read faithfully\n"
 redirect_stdout(out) do
   A = Array{Any,1}(undef, 0)
   for T in SeisIO.TNames
+    println("testing ", T)
     if T == PhaseCat
       push!(A, randPhaseCat())
+    elseif T == MultiStageResp
+      push!(A, MultiStageResp(6))
     else
       push!(A, getfield(SeisIO, Symbol(T))())
     end
@@ -94,6 +97,9 @@ end
 printstyled("  test read/write with data compression\n", color=:light_green)
 SeisIO.KW.comp = 0x02
 S = randSeisData()
+nx = 4
+S.t[1] = [1 0; nx 0]
+S.x[1] = randn(eltype(S.x[1]), nx)
 wseis(savfile1, S)
 R = rseis(savfile1, v=2)[1]
 @test R == S
@@ -107,6 +113,11 @@ C.x = randn(nx)
 n = S.data.n
 push!(S.data, C)
 @test S.data.n == n+1
+C = SeisChannel()
+nx = 4
+C.t = [1 0; nx 0]
+C.x = randn(nx)
+push!(S.data, C)
 wseis(savfile1, S)
 R = rseis(savfile1, v=2)[1]
 @test R == S

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2019.5.10)  19 SEP 2019 20:46
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2019.5.10)  29 SEP 2019 02:05
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1145,22 +1145,22 @@ LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <14.4> not available
  (./SeisIO.toc
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <10.95> not available
 (Font)              Font shape `T1/ptm/b/n' tried instead on input line 2.
- [1
-
-])
+)
 \tf@toc=\write6
 \openout6 = `SeisIO.toc'.
 
- [2]
+ [1
+
+] [2
+
+]
 
 Package Fancyhdr Warning: \headheight is too small (12.0pt): 
  Make it at least 13.59999pt.
  We now make it that large for the rest of the document.
  This may cause the page layout to be inconsistent, however.
 
-[1
-
-] [2
+[1] [2
 
 ]
 Chapter 1.
@@ -1196,12 +1196,12 @@ File: ts1pcr.fd 2001/06/04 font definitions for TS1/pcr.
 ]
 Chapter 2.
 [11] [12]
-Overfull \hbox (36.13448pt too wide) in paragraph at lines 894--894
+Overfull \hbox (36.13448pt too wide) in paragraph at lines 899--899
 []
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 894--894
+Underfull \hbox (badness 10000) in paragraph at lines 899--899
 
  []
 
@@ -1210,35 +1210,35 @@ Underfull \hbox (badness 10000) in paragraph at lines 894--894
 ]
 Chapter 3.
 
-Underfull \hbox (badness 10000) in paragraph at lines 1432--1433
+Underfull \hbox (badness 10000) in paragraph at lines 1423--1424
 []\T1/pcr/m/n/10.95 get_data!(S, "FDSN", "UW.SEP..EHZ,UW.SHW..EHZ,UW.HSR..EHZ",
  "IRIS",
  []
 
 [19]
-Underfull \hbox (badness 10000) in paragraph at lines 1435--1436
+Underfull \hbox (badness 10000) in paragraph at lines 1426--1427
 []\T1/pcr/m/n/10.95 get_data!(S, "IRIS", "CC.PALM..EHN", "IRIS", t=(-120), f="s
 acbl")\T1/ptm/m/n/10.95 :
  []
 
 
-Overfull \hbox (10.9495pt too wide) in paragraph at lines 1441--1442
+Overfull \hbox (10.9495pt too wide) in paragraph at lines 1432--1433
 []\T1/pcr/m/n/10.95 S = get_data("FDSN", "HV.MOKD..HHZ", "IRIS", s="2012-01-01T
 00:00:00",
  []
 
 [20] [21]
-Overfull \hbox (31.58516pt too wide) in paragraph at lines 1594--1594
+Overfull \hbox (31.58516pt too wide) in paragraph at lines 1585--1585
 []
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1594--1594
+Underfull \hbox (badness 10000) in paragraph at lines 1585--1585
 
  []
 
 [22]
-Underfull \hbox (badness 10000) in paragraph at lines 1670--1674
+Underfull \hbox (badness 10000) in paragraph at lines 1661--1665
 []\T1/ptm/m/n/10.95 Check that streams with re-cent data ex-ist at url \T1/ptm/
 m/it/10.95 u \T1/ptm/m/n/10.95 for chan-nel spec \T1/ptm/m/it/10.95 cha\T1/ptm/
 m/n/10.95 , for-mat-ted
@@ -1256,7 +1256,7 @@ LaTeX Font Info:    Font shape `TS1/pcr/bx/n' in size <10.95> not available
 ]
 Chapter 5.
 [33]
-Underfull \hbox (badness 5388) in paragraph at lines 2418--2419
+Underfull \hbox (badness 5388) in paragraph at lines 2409--2410
 []\T1/ptm/m/n/10.95 Incomplete string queries are read to the near-est fully-sp
 ecified time con-straint; thus,
  []
@@ -1266,11 +1266,16 @@ Chapter 6.
 [39
 
 ] [40]
-Underfull \hbox (badness 10000) in paragraph at lines 3104--3105
+Underfull \hbox (badness 10000) in paragraph at lines 3095--3096
 []|\T1/ptm/m/n/10.95 unsigned long
  []
 
 [41]
+Overfull \hbox (3.19415pt too wide) in paragraph at lines 3308--3309
+[]|\T1/ptm/m/n/10.95 Float64| 
+ []
+
+
 Overfull \hbox (3.19415pt too wide) in paragraph at lines 3317--3318
 []|\T1/ptm/m/n/10.95 Float64| 
  []
@@ -1325,19 +1330,19 @@ Overfull \hbox (3.19415pt too wide) in paragraph at lines 3407--3408
 []|\T1/ptm/m/n/10.95 Float64| 
  []
 
-
-Overfull \hbox (3.19415pt too wide) in paragraph at lines 3416--3417
+[42] [43] [44]
+Overfull \hbox (3.19415pt too wide) in paragraph at lines 3820--3821
 []|\T1/ptm/m/n/10.95 Float64| 
  []
 
-[42] [43]
-Overfull \hbox (3.19415pt too wide) in paragraph at lines 3829--3830
+
+Overfull \hbox (3.19415pt too wide) in paragraph at lines 3869--3870
 []|\T1/ptm/m/n/10.95 Float64| 
  []
 
-[44]
-Overfull \hbox (3.19415pt too wide) in paragraph at lines 3878--3879
-[]|\T1/ptm/m/n/10.95 Float64| 
+
+Overfull \hbox (0.75247pt too wide) in paragraph at lines 3939--3940
+[]|\T1/ptm/m/n/10.95 UInt64| 
  []
 
 
@@ -1346,132 +1351,127 @@ Overfull \hbox (0.75247pt too wide) in paragraph at lines 3948--3949
  []
 
 
-Overfull \hbox (0.75247pt too wide) in paragraph at lines 3957--3958
-[]|\T1/ptm/m/n/10.95 UInt64| 
- []
-
-
-Overfull \hbox (3.19415pt too wide) in paragraph at lines 3966--3967
+Overfull \hbox (3.19415pt too wide) in paragraph at lines 3957--3958
 []|\T1/ptm/m/n/10.95 Float64| 
  []
 
 
-Overfull \hbox (3.19415pt too wide) in paragraph at lines 4015--4016
+Overfull \hbox (3.19415pt too wide) in paragraph at lines 4006--4007
 []|\T1/ptm/m/n/10.95 Float64| 
  []
 
 
-Overfull \hbox (1.22876pt too wide) in paragraph at lines 4087--4088
+Overfull \hbox (1.22876pt too wide) in paragraph at lines 4078--4079
 []|\T1/ptm/m/n/10.95 nr*nc| 
  []
 
 [45] [46] [47]
-Overfull \hbox (1.567pt too wide) in paragraph at lines 4727--4728
+Overfull \hbox (1.567pt too wide) in paragraph at lines 4718--4719
 []|\T1/ptm/m/n/10.95 name| 
  []
 
 
-Overfull \hbox (0.9647pt too wide) in paragraph at lines 4835--4836
+Overfull \hbox (0.9647pt too wide) in paragraph at lines 4826--4827
 []|\T1/ptm/m/n/10.95 notes| 
  []
 
 [48]
-Overfull \hbox (1.567pt too wide) in paragraph at lines 4991--4992
+Overfull \hbox (1.567pt too wide) in paragraph at lines 4982--4983
 []|\T1/ptm/m/n/10.95 name| 
  []
 
 
-Overfull \hbox (0.9647pt too wide) in paragraph at lines 5099--5100
+Overfull \hbox (0.9647pt too wide) in paragraph at lines 5090--5091
 []|\T1/ptm/m/n/10.95 notes| 
  []
 
 
-Overfull \hbox (4.61101pt too wide) in paragraph at lines 5117--5118
+Overfull \hbox (4.61101pt too wide) in paragraph at lines 5108--5109
 []|\T1/ptm/m/n/10.95 2Nt[i]| 
  []
 
 
-Overfull \hbox (1.56702pt too wide) in paragraph at lines 5134--5135
+Overfull \hbox (1.56702pt too wide) in paragraph at lines 5125--5126
 []|\T1/ptm/m/n/10.95 Nx[i]| 
  []
 
 [49]
-Overfull \hbox (1.567pt too wide) in paragraph at lines 5248--5249
+Overfull \hbox (1.567pt too wide) in paragraph at lines 5239--5240
 []|\T1/ptm/m/n/10.95 name| 
  []
 
 
-Overfull \hbox (0.9647pt too wide) in paragraph at lines 5320--5321
+Overfull \hbox (0.9647pt too wide) in paragraph at lines 5311--5312
 []|\T1/ptm/m/n/10.95 notes| 
  []
 
 
-Overfull \hbox (4.61101pt too wide) in paragraph at lines 5338--5339
+Overfull \hbox (4.61101pt too wide) in paragraph at lines 5329--5330
 []|\T1/ptm/m/n/10.95 2Nt[i]| 
  []
 
 
-Overfull \hbox (1.56702pt too wide) in paragraph at lines 5355--5356
+Overfull \hbox (1.56702pt too wide) in paragraph at lines 5346--5347
 []|\T1/ptm/m/n/10.95 Nx[i]| 
  []
 
 [50] [51]
-Overfull \hbox (2.82512pt too wide) in paragraph at lines 5654--5655
+Overfull \hbox (2.82512pt too wide) in paragraph at lines 5645--5646
 []|\T1/ptm/m/n/10.95 pad[1]*pad[2]| 
  []
 
 
-Overfull \hbox (4.27261pt too wide) in paragraph at lines 5668--5669
+Overfull \hbox (4.27261pt too wide) in paragraph at lines 5659--5660
 []|\T1/ptm/m/n/10.95 planes| 
  []
 
 
-Overfull \hbox (0.62387pt too wide) in paragraph at lines 5697--5698
+Overfull \hbox (0.62387pt too wide) in paragraph at lines 5688--5689
 []|\T1/ptm/m/n/10.95 (SourceTime)| 
  []
 
 
-Overfull \hbox (4.87492pt too wide) in paragraph at lines 5753--5754
+Overfull \hbox (4.87492pt too wide) in paragraph at lines 5744--5745
 []|\T1/ptm/m/n/10.95 source| 
  []
 
 [52] [53] [54]
-Overfull \hbox (16.05003pt too wide) in paragraph at lines 6261--6262
+Overfull \hbox (16.05003pt too wide) in paragraph at lines 6248--6249
 []|\T1/phv/m/n/10.95 Version| 
  []
 
 [55]
-Underfull \hbox (badness 10000) in paragraph at lines 6357--6359
+Underfull \hbox (badness 10000) in paragraph at lines 6344--6346
 []|\T1/ptm/m/n/10.95 [^^PPB.B004.01.BS1^^Q,
  []
 
 [56] [57] [58]
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <9> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 6835.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 6822.
  [59] [60] [61] (./SeisIO.ind [62] [63
 
 
 ] [64
 
 ])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 7080.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 7080.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 7070.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 7070.
  (./SeisIO.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 7080.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 7080.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 7070.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 7070.
 
 Package rerunfilecheck Info: File `SeisIO.out' has not changed.
-(rerunfilecheck)             Checksum: 947A4163AC98B55A03772B2FF49645A4;4070.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 7080.
+(rerunfilecheck)             Checksum: 9B172585B308399A8B0B5C0475C9D196;3199.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 7070.
  ) 
 Here is how much of TeX's memory you used:
- 14294 strings out of 492982
- 202609 string characters out of 6134896
- 315832 words of memory out of 5000000
- 17200 multiletter control sequences out of 15000+600000
+ 14292 strings out of 492982
+ 202726 string characters out of 6134896
+ 317004 words of memory out of 5000000
+ 17196 multiletter control sequences out of 15000+600000
  73882 words of font info for 110 fonts, out of 8000000 for 9000
  1142 hyphenation exceptions out of 8191
- 37i,16n,48p,513b,533s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 37i,16n,45p,513b,473s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
 e/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texm
 f-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/texmf-dist/
@@ -1486,10 +1486,10 @@ nts/type1/urw/helvetic/uhvr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/ur
 w/helvetic/uhvro8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utm
 b8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/s
 hare/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on SeisIO.pdf (68 pages, 318773 bytes).
+Output written on SeisIO.pdf (68 pages, 317626 bytes).
 PDF statistics:
- 982 PDF objects out of 1000 (max. 8388607)
- 856 compressed objects within 9 object streams
- 305 named destinations out of 1000 (max. 500000)
- 277 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 961 PDF objects out of 1000 (max. 8388607)
+ 835 compressed objects within 9 object streams
+ 307 named destinations out of 1000 (max. 500000)
+ 229 words of extra memory for PDF output out of 10000 (max. 10000000)
 

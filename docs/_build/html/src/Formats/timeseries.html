@@ -130,12 +130,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../Appendices/function_list.html">Utility Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Appendices/seisio_file_format.html">SeisIO Native Format</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Appendices/seisio_file_format.html#simple-object-types">Simple Object Types</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Appendices/seisio_file_format.html#location-types">Location Types</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Appendices/seisio_file_format.html#response-types">Response Types</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Appendices/seisio_file_format.html#the-misc-dictionary">The Misc Dictionary</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Appendices/seisio_file_format.html#compound-object-types">Compound Object Types</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Appendices/seisio_file_format.html#data-type-codes">Data Type Codes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Appendices/web_syntax.html">Data Requests Syntax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Appendices/keywords.html">SeisIO Standard Keywords</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Appendices/examples.html">Examples</a></li>
@@ -269,13 +263,16 @@
 <tr class="row-even"><td><p>SEG Y (rev 0 or rev 1)</p></td>
 <td><p>segy</p></td>
 </tr>
-<tr class="row-odd"><td><p>SUDS</p></td>
+<tr class="row-odd"><td><p>SLIST (ASCII sample list)</p></td>
+<td><p>slist</p></td>
+</tr>
+<tr class="row-even"><td><p>SUDS</p></td>
 <td><p>suds</p></td>
 </tr>
-<tr class="row-even"><td><p>UW data file</p></td>
+<tr class="row-odd"><td><p>UW data file</p></td>
 <td><p>uw</p></td>
 </tr>
-<tr class="row-odd"><td><p>Win32</p></td>
+<tr class="row-even"><td><p>Win32</p></td>
 <td><p>win32</p></td>
 </tr>
 </tbody>
@@ -423,7 +420,8 @@ for a list.</p>
 based on External Data Representation (XDR).</p>
 <p><a class="reference external" href="http://geows.ds.iris.edu/documents/GeoCSV.pdf">GeoCSV</a>: an extension of
 “human-readable”, tabular file format Comma-Separated Values (CSV).</p>
-<p><strong>Lennartz ASCII</strong>: ASCII output of Lennartz portable digitizers.</p>
+<p><strong>Lennartz ASCII</strong>: ASCII output of Lennartz portable digitizers, a variant of
+sample list (SLIST) ASCII.</p>
 <p><a class="reference external" href="https://www.passcal.nmt.edu/content/seg-y-what-it-is">PASSCAL</a>: A single-
 channel variant of SEG Y with no file header, developed by PASSCAL/New Mexico
 Tech and used with PASSCAL field equipment through the late 2000s.</p>
@@ -439,6 +437,8 @@ programming language.</p>
 data format. Common in the energy industry, developed and maintained by the SEG.
 Only SEG Y rev 0 and <a class="reference external" href="https://seg.org/Portals/0/SEG/News%20and%20Resources/Technical%20Standards/seg_y_rev1.pdf">rev 1</a>
 with standard headers are supported.</p>
+<p><strong>SLIST</strong>: An ASCII file with a one-line header and data written to file in
+ASCII string format.</p>
 <p><strong>UW</strong>: the University of Washington data format has no online reference and is
 no longer in use. Created by the Pacific Northwest Seismic Network for event
 archival; used from the 1970s through early 2000s. A UW event is described by a
@@ -446,10 +446,10 @@ pickfile and corresponding data file, whose names are identical except for the
 last character; for example, files 99062109485o and 99062109485W together
 describe event 99062109485. Unlike the win32 data format, the data file is
 self-contained; the pick file is not required to use raw trace data. However,
-like the win32 data format, instrument locations are stored in an external
+like the win32 data format, instrument locations were stored in an external
 human-maintained text file. Only UW-2 data files are supported by SeisIO; we
-have never encountered a UW-1 data file outside of Exabyte tapes and have no
-reason to suspect that any remain in circulation.</p>
+have never encountered a UW-1 data file except in Exabyte tapes from the 80s
+and have no reason to suspect that any are in circulation.</p>
 <p><a class="reference external" href="http://eoc.eri.u-tokyo.ac.jp/WIN/Eindex.html">Win32</a>: data format developed
 by the Earthquake Research Institute (ERI), University of Tokyo, Japan. Data
 are typically divided into files that contain a minute of continuous

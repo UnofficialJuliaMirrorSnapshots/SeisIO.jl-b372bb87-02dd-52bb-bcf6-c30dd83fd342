@@ -72,7 +72,7 @@
 
 
 \title{SeisIO Documentation}
-\date{Sep 19, 2019}
+\date{Sep 29, 2019}
 \release{0.3.0}
 \author{Joshua Jones}
 \newcommand{\sphinxlogo}{\vbox{}}
@@ -700,6 +700,11 @@ SEG Y (rev 0 or rev 1)
 segy
 \\
 \hline
+SLIST (ASCII sample list)
+&
+slist
+\\
+\hline
 SUDS
 &
 suds
@@ -920,7 +925,8 @@ based on External Data Representation (XDR).
 \sphinxhref{http://geows.ds.iris.edu/documents/GeoCSV.pdf}{GeoCSV}: an extension of
 “human-readable”, tabular file format Comma-Separated Values (CSV).
 
-\sphinxstylestrong{Lennartz ASCII}: ASCII output of Lennartz portable digitizers.
+\sphinxstylestrong{Lennartz ASCII}: ASCII output of Lennartz portable digitizers, a variant of
+sample list (SLIST) ASCII.
 
 \sphinxhref{https://www.passcal.nmt.edu/content/seg-y-what-it-is}{PASSCAL}: A single-
 channel variant of SEG Y with no file header, developed by PASSCAL/New Mexico
@@ -941,6 +947,9 @@ data format. Common in the energy industry, developed and maintained by the SEG.
 Only SEG Y rev 0 and \sphinxhref{https://seg.org/Portals/0/SEG/News\%20and\%20Resources/Technical\%20Standards/seg\_y\_rev1.pdf}{rev 1}
 with standard headers are supported.
 
+\sphinxstylestrong{SLIST}: An ASCII file with a one-line header and data written to file in
+ASCII string format.
+
 \sphinxstylestrong{UW}: the University of Washington data format has no online reference and is
 no longer in use. Created by the Pacific Northwest Seismic Network for event
 archival; used from the 1970s through early 2000s. A UW event is described by a
@@ -948,10 +957,10 @@ pickfile and corresponding data file, whose names are identical except for the
 last character; for example, files 99062109485o and 99062109485W together
 describe event 99062109485. Unlike the win32 data format, the data file is
 self-contained; the pick file is not required to use raw trace data. However,
-like the win32 data format, instrument locations are stored in an external
+like the win32 data format, instrument locations were stored in an external
 human-maintained text file. Only UW-2 data files are supported by SeisIO; we
-have never encountered a UW-1 data file outside of Exabyte tapes and have no
-reason to suspect that any remain in circulation.
+have never encountered a UW-1 data file except in Exabyte tapes from the 80s
+and have no reason to suspect that any are in circulation.
 
 \sphinxhref{http://eoc.eri.u-tokyo.ac.jp/WIN/Eindex.html}{Win32}: data format developed
 by the Earthquake Research Institute (ERI), University of Tokyo, Japan. Data
@@ -1179,18 +1188,18 @@ Write fields from SeisIO struct \sphinxtitleref{S} to sacpz file \sphinxtitleref
 
 \section{HDF5 File Formats}
 \label{\detokenize{src/Formats/hdf5:hdf5-file-formats}}\label{\detokenize{src/Formats/hdf5::doc}}
-Of the emerging HDF5 geophysical data formats, only the ASDF format is
-supported at present. Support for other geophysical HDF5 (sub)formats is planned.
+Of the increasingly popular HDF5-based formats for geophysical data, only ASDF
+is supported at present. Support for other (sub)formats is planned.
 
 
 \begin{fulllineitems}
-\pysigline{\sphinxbfcode{\sphinxupquote{S~=~read\_hdf5(fname::String,~{[},~KWs{]})}}}
+\pysigline{\sphinxbfcode{\sphinxupquote{S~=~read\_hdf5(fname::String,~s::TimeSpec,~t::TimeSpec,~{[},~KWs{]})}}}
 \end{fulllineitems}
 
 
 
 \begin{fulllineitems}
-\pysigline{\sphinxbfcode{\sphinxupquote{S~=~read\_meta(fname::String,~{[},~KWs{]})}}}
+\pysigline{\sphinxbfcode{\sphinxupquote{read\_hdf5!(S::GphysData,~fname::String,~s::TimeSpec,~t::TimeSpec,~{[},~KWs{]})}}}
 \end{fulllineitems}
 
 
@@ -1236,20 +1245,6 @@ id pattern, formated nn.sss.ll.ccc
 (net.sta.loc.cha); FDSN-style wildcards $^{\text{(a)}}$
 \\
 \hline
-s
-&
-TimeSpec
-&&
-start time $^{\text{(b)}}$
-\\
-\hline
-t
-&
-TimeSpec
-&&
-termination (end) time $^{\text{(b)}}$
-\\
-\hline
 msr
 &
 Bool
@@ -1274,10 +1269,6 @@ verbosity
 
 $^{\text{(a)}}$  A question mark (‘?’) is a wildcard for a single character (exactly
 one); an asterisk (‘*’) is a wildcard for zero or more characters.
-$^{\text{(b)}}$  If unset, (s,t) \textasciitilde{} (21 September 1677, 11 April 2262), the limits of
-timekeeping (relative to the Unix epoch) with Int64 nanoseconds.
-
-The use of \sphinxcode{\sphinxupquote{s}}, \sphinxcode{\sphinxupquote{t}} are \sphinxstyleemphasis{very strongly} recommended.
 \index{scan\_hdf5() (built-in function)@\spxentry{scan\_hdf5()}\spxextra{built-in function}}
 
 \begin{fulllineitems}
@@ -1528,19 +1519,19 @@ data from thousands of geophysical monitoring instruments. See
 
 
 \begin{fulllineitems}
-\pysigline{\sphinxbfcode{\sphinxupquote{SeedLink!(S,~chans,~KWs)}}}
+\pysigline{\sphinxbfcode{\sphinxupquote{seedlink!(S,~chans,~KWs)}}}
 \end{fulllineitems}
 
 
 
 \begin{fulllineitems}
-\pysigline{\sphinxbfcode{\sphinxupquote{SeedLink!(S,~chans,~patts,~KWs)}}}
+\pysigline{\sphinxbfcode{\sphinxupquote{seedlink!(S,~chans,~patts,~KWs)}}}
 \end{fulllineitems}
 
 
 
 \begin{fulllineitems}
-\pysigline{\sphinxbfcode{\sphinxupquote{S~=~SeedLink(chans,~KWs)}}}
+\pysigline{\sphinxbfcode{\sphinxupquote{S~=~seedlink(chans,~KWs)}}}
 \end{fulllineitems}
 
 
@@ -3284,7 +3275,7 @@ If an archive contains no data objects, ID, TS, TE, and P are empty;
 equivalently, \sphinxcode{\sphinxupquote{bID == bTS}}.
 
 
-\section{Simple Object Types}
+\subsection{Simple Object Types}
 \label{\detokenize{src/Appendices/seisio_file_format:simple-object-types}}
 Fields of these objects are written in one of three ways: as “plain data” types,
 such as UInt8 or Float64; as arrays; or as strings.
@@ -3295,7 +3286,7 @@ In a simple object, each array is stored as follows:
 3. Array values (e.g. 0.08250153, 0.023121119, 0.6299772, 0.79595184)
 
 
-\subsection{EQLoc}
+\subsubsection{EQLoc}
 \label{\detokenize{src/Appendices/seisio_file_format:eqloc}}
 
 \begin{savenotes}\sphinxattablestart
@@ -3524,7 +3515,7 @@ data source string
 \end{DUlineblock}
 
 
-\subsection{EQMag}
+\subsubsection{EQMag}
 \label{\detokenize{src/Appendices/seisio_file_format:eqmag}}
 
 \begin{savenotes}\sphinxattablestart
@@ -3609,7 +3600,7 @@ data source string
 \sphinxattableend\end{savenotes}
 
 
-\subsection{SeisPha}
+\subsubsection{SeisPha}
 \label{\detokenize{src/Appendices/seisio_file_format:seispha}}
 
 \begin{savenotes}\sphinxattablestart
@@ -3652,7 +3643,7 @@ polarity, quality
 \sphinxattableend\end{savenotes}
 
 
-\subsection{SourceTime}
+\subsubsection{SourceTime}
 \label{\detokenize{src/Appendices/seisio_file_format:sourcetime}}
 
 \begin{savenotes}\sphinxattablestart
@@ -3701,7 +3692,7 @@ duration, rise time, decay time
 \sphinxattableend\end{savenotes}
 
 
-\subsection{StringVec}
+\subsubsection{StringVec}
 \label{\detokenize{src/Appendices/seisio_file_format:stringvec}}
 A vector of variable-length strings; its exact Type in Julia is Array\{String,1\}.
 
@@ -3777,10 +3768,10 @@ string
 \sphinxattableend\end{savenotes}
 
 
-\section{Location Types}
+\subsection{Location Types}
 \label{\detokenize{src/Appendices/seisio_file_format:location-types}}
 
-\subsection{GenLoc}
+\subsubsection{GenLoc}
 \label{\detokenize{src/Appendices/seisio_file_format:genloc}}
 
 \begin{savenotes}\sphinxattablestart
@@ -3838,7 +3829,7 @@ location vector
 \sphinxattableend\end{savenotes}
 
 
-\subsection{GeoLoc}
+\subsubsection{GeoLoc}
 \label{\detokenize{src/Appendices/seisio_file_format:geoloc}}
 
 \begin{savenotes}\sphinxattablestart
@@ -3890,7 +3881,7 @@ depth, azimuth, incidence
 \sphinxattableend\end{savenotes}
 
 
-\subsection{UTMLoc}
+\subsubsection{UTMLoc}
 \label{\detokenize{src/Appendices/seisio_file_format:utmloc}}
 
 \begin{savenotes}\sphinxattablestart
@@ -3975,7 +3966,7 @@ elevation, depth, azimuth, incidence
 \sphinxattableend\end{savenotes}
 
 
-\subsection{XYLoc}
+\subsubsection{XYLoc}
 \label{\detokenize{src/Appendices/seisio_file_format:xyloc}}
 
 \begin{savenotes}\sphinxattablestart
@@ -4024,10 +4015,10 @@ x, y, z, azimuth, incidence, origin x, origin y, origin z
 \sphinxattableend\end{savenotes}
 
 
-\section{Response Types}
+\subsection{Response Types}
 \label{\detokenize{src/Appendices/seisio_file_format:response-types}}
 
-\subsection{GenResp}
+\subsubsection{GenResp}
 \label{\detokenize{src/Appendices/seisio_file_format:genresp}}
 
 \begin{savenotes}\sphinxattablestart
@@ -4094,7 +4085,7 @@ complex response matrix
 \sphinxattableend\end{savenotes}
 
 
-\subsection{PZResp}
+\subsubsection{PZResp}
 \label{\detokenize{src/Appendices/seisio_file_format:pzresp}}
 
 \begin{savenotes}\sphinxattablestart
@@ -4163,14 +4154,14 @@ complex zeros vector
 PZResp64 is identical to PZResp with Float64 values for c, p, z, rather than Float32.
 
 
-\section{The Misc Dictionary}
+\subsection{The Misc Dictionary}
 \label{\detokenize{src/Appendices/seisio_file_format:the-misc-dictionary}}
 Most compound objects below contain a dictionary (Dict\{String,Any\}) for
 non-essential information in a field named \sphinxcode{\sphinxupquote{:misc}}. The tables below describe
 how this field is written to disk.
 
 
-\subsection{Misc}
+\subsubsection{Misc}
 \label{\detokenize{src/Appendices/seisio_file_format:misc}}
 
 \begin{savenotes}\sphinxattablestart
@@ -4240,12 +4231,12 @@ object i
 \sphinxattableend\end{savenotes}
 
 
-\subsubsection{Dictionary Contents}
+\paragraph{Dictionary Contents}
 \label{\detokenize{src/Appendices/seisio_file_format:dictionary-contents}}
 These subtables describe how to read the possible data types in a Misc dictionary.
 
 
-\subsection{String Array (c == 0x81)}
+\subsubsection{String Array (c == 0x81)}
 \label{\detokenize{src/Appendices/seisio_file_format:string-array-c-0x81}}
 
 \begin{savenotes}\sphinxattablestart
@@ -4276,7 +4267,7 @@ string vector
 \sphinxattableend\end{savenotes}
 
 
-\subsection{Other Array (c == 0x80 or c \textgreater{} 0x81)}
+\subsubsection{Other Array (c == 0x80 or c \textgreater{} 0x81)}
 \label{\detokenize{src/Appendices/seisio_file_format:other-array-c-0x80-or-c-0x81}}
 
 \begin{savenotes}\sphinxattablestart
@@ -4325,7 +4316,7 @@ array
 \sphinxattableend\end{savenotes}
 
 
-\subsection{String (c == 0x01)}
+\subsubsection{String (c == 0x01)}
 \label{\detokenize{src/Appendices/seisio_file_format:string-c-0x01}}
 
 \begin{savenotes}\sphinxattablestart
@@ -4365,17 +4356,17 @@ string
 \sphinxattableend\end{savenotes}
 
 
-\subsection{Bits Type (c == 0x00 or 0x01 \textless{} c \textless{} 0x7f)}
+\subsubsection{Bits Type (c == 0x00 or 0x01 \textless{} c \textless{} 0x7f)}
 \label{\detokenize{src/Appendices/seisio_file_format:bits-type-c-0x00-or-0x01-c-0x7f}}
 Read a single value whose Type corresponds to the UInt8 {\hyperref[\detokenize{src/Appendices/seisio_file_format:type-codes}]{\sphinxcrossref{\DUrole{std,std-ref}{Type code}}}}.
 
 
-\section{Compound Object Types}
+\subsection{Compound Object Types}
 \label{\detokenize{src/Appendices/seisio_file_format:compound-object-types}}
 Each of these objects contains at least one of the above simple object types.
 
 
-\subsection{PhaseCat}
+\subsubsection{PhaseCat}
 \label{\detokenize{src/Appendices/seisio_file_format:phasecat}}
 
 \begin{savenotes}\sphinxattablestart
@@ -4428,7 +4419,7 @@ seismic phases
 \sphinxattableend\end{savenotes}
 
 
-\subsection{EventChannel}
+\subsubsection{EventChannel}
 \label{\detokenize{src/Appendices/seisio_file_format:eventchannel}}
 A single channel of data related to a seismic event
 
@@ -4677,7 +4668,7 @@ data vector
 \sphinxattableend\end{savenotes}
 
 
-\subsection{SeisChannel}
+\subsubsection{SeisChannel}
 \label{\detokenize{src/Appendices/seisio_file_format:seischannel}}
 A single channel of univariate geophysical data
 \begin{quote}
@@ -4892,7 +4883,7 @@ data vector
 \end{quote}
 
 
-\subsection{EventTraceData}
+\subsubsection{EventTraceData}
 \label{\detokenize{src/Appendices/seisio_file_format:eventtracedata}}
 A multichannel record of time-series data related to a seismic event.
 \begin{quote}
@@ -5149,7 +5140,7 @@ If cmp == 0x01, read Nx{[}i{]} samples of type UInt8 and pass through lz4 decomp
 \end{quote}
 
 
-\subsection{SeisData}
+\subsubsection{SeisData}
 \label{\detokenize{src/Appendices/seisio_file_format:seisdata}}
 A record containing multiple channels of univariate geophysical data.
 \begin{quote}
@@ -5370,7 +5361,7 @@ If cmp == 0x01, read Nx{[}i{]} samples of type UInt8 and pass through lz4 decomp
 \end{quote}
 
 
-\subsection{SeisHdr}
+\subsubsection{SeisHdr}
 \label{\detokenize{src/Appendices/seisio_file_format:seishdr}}
 
 \begin{savenotes}\sphinxattablestart
@@ -5522,7 +5513,7 @@ event type string
 \sphinxattableend\end{savenotes}
 
 
-\subsection{SeisSrc}
+\subsubsection{SeisSrc}
 \label{\detokenize{src/Appendices/seisio_file_format:seissrc}}
 
 \begin{savenotes}\sphinxattablestart
@@ -5724,7 +5715,7 @@ Notes and automated logging
 \sphinxattableend\end{savenotes}
 
 
-\subsection{SeisEvent}
+\subsubsection{SeisEvent}
 \label{\detokenize{src/Appendices/seisio_file_format:seisevent}}
 
 \begin{savenotes}\sphinxattablestart
@@ -5773,13 +5764,13 @@ event trace data
 \sphinxattableend\end{savenotes}
 
 
-\section{Data Type Codes}
+\subsection{Data Type Codes}
 \label{\detokenize{src/Appendices/seisio_file_format:data-type-codes}}
 Each Type code is written to disk as a UInt8, with the important exception of
 SeisIO custom object Type codes (which use UInt32).
 
 
-\subsection{Loc Type Codes}
+\subsubsection{Loc Type Codes}
 \label{\detokenize{src/Appendices/seisio_file_format:loc-type-codes}}\label{\detokenize{src/Appendices/seisio_file_format:loc-codes}}
 
 \begin{savenotes}\sphinxattablestart
@@ -5817,7 +5808,7 @@ XYLoc
 \sphinxattableend\end{savenotes}
 
 
-\subsection{Resp Type Codes}
+\subsubsection{Resp Type Codes}
 \label{\detokenize{src/Appendices/seisio_file_format:resp-type-codes}}\label{\detokenize{src/Appendices/seisio_file_format:resp-codes}}
 
 \begin{savenotes}\sphinxattablestart
@@ -5850,7 +5841,7 @@ PZResp64
 \sphinxattableend\end{savenotes}
 
 
-\subsection{Other Type Codes}
+\subsubsection{Other Type Codes}
 \label{\detokenize{src/Appendices/seisio_file_format:other-type-codes}}\label{\detokenize{src/Appendices/seisio_file_format:type-codes}}
 Only the Types below are faithfully preserved in write/read of a :misc field
 dictionary; other Types are not written to file and can cause \sphinxcode{\sphinxupquote{wseis}} to
@@ -6128,7 +6119,7 @@ Array\{Complex\{Float64\},N\}
 \sphinxattableend\end{savenotes}
 
 
-\subsubsection{SeisIO Object Type codes}
+\paragraph{SeisIO Object Type codes}
 \label{\detokenize{src/Appendices/seisio_file_format:seisio-object-type-codes}}\label{\detokenize{src/Appendices/seisio_file_format:object-codes}}
 
 \begin{savenotes}\sphinxattablestart
@@ -6235,22 +6226,18 @@ EQLoc
 &
 EQMag
 \\
-\hline&\\
-\hline&\\
-\hline
-File Format Version History
-&\\
-\hline&\\
-\hline
-File format versions \textless{}0.50 are no longer supported; please email us if you
-&\\
-\hline
-need to read in very old data.
-&\\
 \hline
 \end{tabular}
 \par
 \sphinxattableend\end{savenotes}
+
+
+\subsection{File Format Version History}
+\label{\detokenize{src/Appendices/seisio_file_format:file-format-version-history}}\begin{quote}
+
+File format versions \textless{}0.50 are no longer supported; please email us if you
+need to read in very old data.
+\end{quote}
 
 
 \begin{savenotes}\sphinxattablestart
@@ -6924,8 +6911,11 @@ exit on error?
 \section{Examples}
 \label{\detokenize{src/Appendices/examples:examples}}\label{\detokenize{src/Appendices/examples:webex}}\label{\detokenize{src/Appendices/examples::doc}}
 
-\subsection{FDSN data query}
-\label{\detokenize{src/Appendices/examples:fdsn-data-query}}
+\subsection{Timeseries data queries}
+\label{\detokenize{src/Appendices/examples:timeseries-data-queries}}
+
+\subsubsection{FDSN dataselect}
+\label{\detokenize{src/Appendices/examples:fdsn-dataselect}}
 1. Download 10 minutes of data from four stations at Mt. St. Helens (WA, USA), delete the low-gain channels, and save as SAC files in the current directory.
 
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
@@ -6953,27 +6943,8 @@ exit on error?
 \end{sphinxVerbatim}
 
 
-\subsection{FDSN station query}
-\label{\detokenize{src/Appendices/examples:fdsn-station-query}}
-A sample FDSN station query
-
-\begin{sphinxVerbatim}[commandchars=\\\{\}]
-\PYG{n}{S} \PYG{o}{=} \PYG{n}{FDSNsta}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{CC.VALT..,PB.B001..BS?,PB.B001..E??}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\end{sphinxVerbatim}
-
-
-\subsection{FDSN event header/data query}
-\label{\detokenize{src/Appendices/examples:fdsn-event-header-data-query}}
-Get seismic and strainmeter records for the P-wave of the Tohoku-Oki great earthquake on two borehole stations and write to native SeisData format:
-
-\begin{sphinxVerbatim}[commandchars=\\\{\}]
-\PYG{n}{S} \PYG{o}{=} \PYG{n}{FDSNevt}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{201103110547}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{PB.B004..EH?,PB.B004..BS?,PB.B001..BS?,PB.B001..EH?}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{wseis}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{201103110547\PYGZus{}evt.seis}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{n}{S}\PYG{p}{)}
-\end{sphinxVerbatim}
-
-
-\subsection{IRISWS data query}
-\label{\detokenize{src/Appendices/examples:irisws-data-query}}
+\subsubsection{IRIS timeseries}
+\label{\detokenize{src/Appendices/examples:iris-timeseries}}
 Note that the “src” keyword is not used in IRIS queries.
 \begin{enumerate}
 \def\theenumi{\arabic{enumi}}
@@ -7019,13 +6990,32 @@ get\PYGZus{}data!(S, \PYGZdq{}IRIS\PYGZdq{}, CHA, s=TS, t=TT)
 \end{sphinxVerbatim}
 
 
+\subsection{FDSN station query}
+\label{\detokenize{src/Appendices/examples:fdsn-station-query}}
+Get channel information for strain and seismic channels at station PB.B001:
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{n}{S} \PYG{o}{=} \PYG{n}{FDSNsta}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{CC.VALT..,PB.B001..BS?,PB.B001..E??}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\end{sphinxVerbatim}
+
+
+\subsection{FDSN event query}
+\label{\detokenize{src/Appendices/examples:fdsn-event-query}}
+Get seismic and strainmeter records for the P-wave of the Tohoku-Oki great earthquake on two borehole stations and write to native SeisData format:
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{n}{S} \PYG{o}{=} \PYG{n}{FDSNevt}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{201103110547}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{PB.B004..EH?,PB.B004..BS?,PB.B001..BS?,PB.B001..EH?}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{wseis}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{201103110547\PYGZus{}evt.seis}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{n}{S}\PYG{p}{)}
+\end{sphinxVerbatim}
+
+
 \subsection{SeedLink sessions}
 \label{\detokenize{src/Appendices/examples:seedlink-sessions}}
 1. An attended SeedLink session in DATA mode. Initiate a SeedLink session in DATA mode using config file SL.conf and write all packets received directly to file (in addition to parsing to S itself). Set nominal refresh interval for checking for new data to 10 s. A mini-seed file will be generated automatically.
 
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 S = SeisData()
-SeedLink!(S, \PYGZdq{}SL.conf\PYGZdq{}, mode=\PYGZdq{}DATA\PYGZdq{}, r=10, w=true)
+seedlink!(S, \PYGZdq{}SL.conf\PYGZdq{}, mode=\PYGZdq{}DATA\PYGZdq{}, r=10, w=true)
 \end{sphinxVerbatim}
 
 2. An unattended SeedLink download in TIME mode. Get the next two minutes of data from stations GPW, MBW, SHUK in the UW network. Put the Julia REPL to sleep while the request fills. If the connection is still open, close it (SeedLink’s time bounds arent precise in TIME mode, so this may or may not be necessary). Pause briefly so that the last data packets are written. Synchronize results and write data in native SeisIO file format.
@@ -7033,7 +7023,7 @@ SeedLink!(S, \PYGZdq{}SL.conf\PYGZdq{}, mode=\PYGZdq{}DATA\PYGZdq{}, r=10, w=tru
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 sta = \PYGZdq{}UW.GPW,UW.MBW,UW.SHUK\PYGZdq{}
 s0 = now()
-S = SeedLink(sta, mode=\PYGZdq{}TIME\PYGZdq{}, s=s0, t=120, r=10)
+S = seedlink(sta, mode=\PYGZdq{}TIME\PYGZdq{}, s=s0, t=120, r=10)
 sleep(180)
 isopen(S.c[1]) \PYGZam{}\PYGZam{} close(S.c[1])
 sleep(20)
@@ -7046,7 +7036,7 @@ wseis(fname, S)
 
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYG{n}{sta} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{UW.GPW, UW.MBW, UW.SHUK}\PYG{l+s+s2}{\PYGZdq{}}
-\PYG{n}{S1} \PYG{o}{=} \PYG{n}{SeedLink}\PYG{p}{(}\PYG{n}{sta}\PYG{p}{,} \PYG{n}{mode}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{TIME}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{n}{s}\PYG{o}{=}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{t}\PYG{o}{=}\PYG{l+m+mi}{120}\PYG{p}{)}
+\PYG{n}{S1} \PYG{o}{=} \PYG{n}{seedlink}\PYG{p}{(}\PYG{n}{sta}\PYG{p}{,} \PYG{n}{mode}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{TIME}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{n}{s}\PYG{o}{=}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{t}\PYG{o}{=}\PYG{l+m+mi}{120}\PYG{p}{)}
 \end{sphinxVerbatim}
 
 4. A SeedLink session in DATA mode with multiple servers, including a config file. Data are parsed roughly every 10 seconds. A total of 5 minutes of data are requested.
@@ -7060,16 +7050,16 @@ dt = en\PYGZhy{}st
 (d0,d1) = parsetimewin(st,en)
 
 S = SeisData()
-SeedLink!(S, sta, mode=\PYGZdq{}TIME\PYGZdq{}, r=10.0, s=d0, t=d1)
+seedlink!(S, sta, mode=\PYGZdq{}TIME\PYGZdq{}, r=10.0, s=d0, t=d1)
 println(stdout, \PYGZdq{}...first link initialized...\PYGZdq{})
 
 \PYGZsh{} Seedlink with a config file
 config\PYGZus{}file = \PYGZdq{}seedlink.conf\PYGZdq{}
-SeedLink!(S, config\PYGZus{}file, r=10.0, mode=\PYGZdq{}TIME\PYGZdq{}, s=d0, t=d1)
+seedlink!(S, config\PYGZus{}file, r=10.0, mode=\PYGZdq{}TIME\PYGZdq{}, s=d0, t=d1)
 println(stdout, \PYGZdq{}...second link initialized...\PYGZdq{})
 
 \PYGZsh{} Seedlink with a config string
-SeedLink!(S, \PYGZdq{}CC.VALT..???, UW.ELK..EHZ\PYGZdq{}, mode=\PYGZdq{}TIME\PYGZdq{}, r=10.0, s=d0, t=d1)
+seedlink!(S, \PYGZdq{}CC.VALT..???, UW.ELK..EHZ\PYGZdq{}, mode=\PYGZdq{}TIME\PYGZdq{}, r=10.0, s=d0, t=d1)
 println(stdout, \PYGZdq{}...third link initialized...\PYGZdq{})
 \end{sphinxVerbatim}
 

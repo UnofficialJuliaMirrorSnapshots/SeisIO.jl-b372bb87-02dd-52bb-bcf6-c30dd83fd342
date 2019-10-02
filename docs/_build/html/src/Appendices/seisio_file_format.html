@@ -119,57 +119,58 @@
 <li class="toctree-l1"><a class="reference internal" href="function_list.html">Utility Functions</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">SeisIO Native Format</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#seisio-file">SeisIO File</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#simple-object-types">Simple Object Types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#eqloc">EQLoc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#eqmag">EQMag</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#seispha">SeisPha</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sourcetime">SourceTime</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stringvec">StringVec</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#simple-object-types">Simple Object Types</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#eqloc">EQLoc</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#eqmag">EQMag</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#seispha">SeisPha</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#sourcetime">SourceTime</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#stringvec">StringVec</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#location-types">Location Types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#genloc">GenLoc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geoloc">GeoLoc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utmloc">UTMLoc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#xyloc">XYLoc</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#location-types">Location Types</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#genloc">GenLoc</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#geoloc">GeoLoc</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#utmloc">UTMLoc</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#xyloc">XYLoc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#response-types">Response Types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#genresp">GenResp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pzresp">PZResp</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#response-types">Response Types</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#genresp">GenResp</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#pzresp">PZResp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-misc-dictionary">The Misc Dictionary</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#misc">Misc</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dictionary-contents">Dictionary Contents</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#the-misc-dictionary">The Misc Dictionary</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#misc">Misc</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#dictionary-contents">Dictionary Contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#string-array-c-0x81">String Array (c == 0x81)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#other-array-c-0x80-or-c-0x81">Other Array (c == 0x80 or c &gt; 0x81)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#string-c-0x01">String (c == 0x01)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bits-type-c-0x00-or-0x01-c-0x7f">Bits Type (c == 0x00 or 0x01 &lt; c &lt; 0x7f)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#string-array-c-0x81">String Array (c == 0x81)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#other-array-c-0x80-or-c-0x81">Other Array (c == 0x80 or c &gt; 0x81)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#string-c-0x01">String (c == 0x01)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#bits-type-c-0x00-or-0x01-c-0x7f">Bits Type (c == 0x00 or 0x01 &lt; c &lt; 0x7f)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#compound-object-types">Compound Object Types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phasecat">PhaseCat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#eventchannel">EventChannel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#seischannel">SeisChannel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#eventtracedata">EventTraceData</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#seisdata">SeisData</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#seishdr">SeisHdr</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#seissrc">SeisSrc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#seisevent">SeisEvent</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#compound-object-types">Compound Object Types</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#phasecat">PhaseCat</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#eventchannel">EventChannel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#seischannel">SeisChannel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#eventtracedata">EventTraceData</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#seisdata">SeisData</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#seishdr">SeisHdr</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#seissrc">SeisSrc</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#seisevent">SeisEvent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-type-codes">Data Type Codes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#loc-type-codes">Loc Type Codes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#resp-type-codes">Resp Type Codes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#other-type-codes">Other Type Codes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#seisio-object-type-codes">SeisIO Object Type codes</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#data-type-codes">Data Type Codes</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#loc-type-codes">Loc Type Codes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#resp-type-codes">Resp Type Codes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#other-type-codes">Other Type Codes</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#seisio-object-type-codes">SeisIO Object Type codes</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#file-format-version-history">File Format Version History</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="web_syntax.html">Data Requests Syntax</a></li>
@@ -436,9 +437,8 @@ type <code class="docutils literal notranslate"><span class="pre">C[k]</span></c
 <p>If an archive contains no data objects, ID, TS, TE, and P are empty;
 equivalently, <code class="docutils literal notranslate"><span class="pre">bID</span> <span class="pre">==</span> <span class="pre">bTS</span></code>.</p>
 </div>
-</div>
 <div class="section" id="simple-object-types">
-<h1>Simple Object Types<a class="headerlink" href="#simple-object-types" title="Permalink to this headline">¶</a></h1>
+<h2>Simple Object Types<a class="headerlink" href="#simple-object-types" title="Permalink to this headline">¶</a></h2>
 <p>Fields of these objects are written in one of three ways: as “plain data” types,
 such as UInt8 or Float64; as arrays; or as strings.</p>
 <p>In a simple object, each array is stored as follows:
@@ -446,7 +446,7 @@ such as UInt8 or Float64; as arrays; or as strings.</p>
 2. Int64 array of dimensions themselves (e.g. 2, 2)
 3. Array values (e.g. 0.08250153, 0.023121119, 0.6299772, 0.79595184)</p>
 <div class="section" id="eqloc">
-<h2>EQLoc<a class="headerlink" href="#eqloc" title="Permalink to this headline">¶</a></h2>
+<h3>EQLoc<a class="headerlink" href="#eqloc" title="Permalink to this headline">¶</a></h3>
 <table class="colwidths-given docutils align-center">
 <colgroup>
 <col style="width: 9%" />
@@ -584,7 +584,7 @@ such as UInt8 or Float64; as arrays; or as strings.</p>
 </div>
 </div>
 <div class="section" id="eqmag">
-<h2>EQMag<a class="headerlink" href="#eqmag" title="Permalink to this headline">¶</a></h2>
+<h3>EQMag<a class="headerlink" href="#eqmag" title="Permalink to this headline">¶</a></h3>
 <table class="colwidths-given docutils align-center">
 <colgroup>
 <col style="width: 8%" />
@@ -639,7 +639,7 @@ such as UInt8 or Float64; as arrays; or as strings.</p>
 </table>
 </div>
 <div class="section" id="seispha">
-<h2>SeisPha<a class="headerlink" href="#seispha" title="Permalink to this headline">¶</a></h2>
+<h3>SeisPha<a class="headerlink" href="#seispha" title="Permalink to this headline">¶</a></h3>
 <table class="colwidths-given docutils align-center">
 <colgroup>
 <col style="width: 8%" />
@@ -674,7 +674,7 @@ such as UInt8 or Float64; as arrays; or as strings.</p>
 </table>
 </div>
 <div class="section" id="sourcetime">
-<h2>SourceTime<a class="headerlink" href="#sourcetime" title="Permalink to this headline">¶</a></h2>
+<h3>SourceTime<a class="headerlink" href="#sourcetime" title="Permalink to this headline">¶</a></h3>
 <table class="colwidths-given docutils align-center">
 <colgroup>
 <col style="width: 8%" />
@@ -709,7 +709,7 @@ such as UInt8 or Float64; as arrays; or as strings.</p>
 </table>
 </div>
 <div class="section" id="stringvec">
-<h2>StringVec<a class="headerlink" href="#stringvec" title="Permalink to this headline">¶</a></h2>
+<h3>StringVec<a class="headerlink" href="#stringvec" title="Permalink to this headline">¶</a></h3>
 <p>A vector of variable-length strings; its exact Type in Julia is Array{String,1}.</p>
 <table class="colwidths-given docutils align-center" id="id17">
 <caption><span class="caption-text">StringVec</span><a class="headerlink" href="#id17" title="Permalink to this table">¶</a></caption>
@@ -767,9 +767,9 @@ such as UInt8 or Float64; as arrays; or as strings.</p>
 </div>
 </div>
 <div class="section" id="location-types">
-<h1>Location Types<a class="headerlink" href="#location-types" title="Permalink to this headline">¶</a></h1>
+<h2>Location Types<a class="headerlink" href="#location-types" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="genloc">
-<h2>GenLoc<a class="headerlink" href="#genloc" title="Permalink to this headline">¶</a></h2>
+<h3>GenLoc<a class="headerlink" href="#genloc" title="Permalink to this headline">¶</a></h3>
 <table class="colwidths-given docutils align-center">
 <colgroup>
 <col style="width: 9%" />
@@ -809,7 +809,7 @@ such as UInt8 or Float64; as arrays; or as strings.</p>
 </table>
 </div>
 <div class="section" id="geoloc">
-<h2>GeoLoc<a class="headerlink" href="#geoloc" title="Permalink to this headline">¶</a></h2>
+<h3>GeoLoc<a class="headerlink" href="#geoloc" title="Permalink to this headline">¶</a></h3>
 <table class="colwidths-given docutils align-center">
 <colgroup>
 <col style="width: 9%" />
@@ -849,7 +849,7 @@ such as UInt8 or Float64; as arrays; or as strings.</p>
 </table>
 </div>
 <div class="section" id="utmloc">
-<h2>UTMLoc<a class="headerlink" href="#utmloc" title="Permalink to this headline">¶</a></h2>
+<h3>UTMLoc<a class="headerlink" href="#utmloc" title="Permalink to this headline">¶</a></h3>
 <table class="colwidths-given docutils align-center">
 <colgroup>
 <col style="width: 9%" />
@@ -904,7 +904,7 @@ such as UInt8 or Float64; as arrays; or as strings.</p>
 </table>
 </div>
 <div class="section" id="xyloc">
-<h2>XYLoc<a class="headerlink" href="#xyloc" title="Permalink to this headline">¶</a></h2>
+<h3>XYLoc<a class="headerlink" href="#xyloc" title="Permalink to this headline">¶</a></h3>
 <table class="colwidths-given docutils align-center">
 <colgroup>
 <col style="width: 9%" />
@@ -940,9 +940,9 @@ such as UInt8 or Float64; as arrays; or as strings.</p>
 </div>
 </div>
 <div class="section" id="response-types">
-<h1>Response Types<a class="headerlink" href="#response-types" title="Permalink to this headline">¶</a></h1>
+<h2>Response Types<a class="headerlink" href="#response-types" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="genresp">
-<h2>GenResp<a class="headerlink" href="#genresp" title="Permalink to this headline">¶</a></h2>
+<h3>GenResp<a class="headerlink" href="#genresp" title="Permalink to this headline">¶</a></h3>
 <table class="colwidths-given docutils align-center">
 <colgroup>
 <col style="width: 8%" />
@@ -987,7 +987,7 @@ such as UInt8 or Float64; as arrays; or as strings.</p>
 </table>
 </div>
 <div class="section" id="pzresp">
-<h2>PZResp<a class="headerlink" href="#pzresp" title="Permalink to this headline">¶</a></h2>
+<h3>PZResp<a class="headerlink" href="#pzresp" title="Permalink to this headline">¶</a></h3>
 <table class="colwidths-given docutils align-center">
 <colgroup>
 <col style="width: 8%" />
@@ -1034,12 +1034,12 @@ such as UInt8 or Float64; as arrays; or as strings.</p>
 </div>
 </div>
 <div class="section" id="the-misc-dictionary">
-<h1>The Misc Dictionary<a class="headerlink" href="#the-misc-dictionary" title="Permalink to this headline">¶</a></h1>
+<h2>The Misc Dictionary<a class="headerlink" href="#the-misc-dictionary" title="Permalink to this headline">¶</a></h2>
 <p>Most compound objects below contain a dictionary (Dict{String,Any}) for
 non-essential information in a field named <code class="docutils literal notranslate"><span class="pre">:misc</span></code>. The tables below describe
 how this field is written to disk.</p>
 <div class="section" id="misc">
-<h2>Misc<a class="headerlink" href="#misc" title="Permalink to this headline">¶</a></h2>
+<h3>Misc<a class="headerlink" href="#misc" title="Permalink to this headline">¶</a></h3>
 <table class="colwidths-given docutils align-center">
 <colgroup>
 <col style="width: 8%" />
@@ -1093,12 +1093,12 @@ how this field is written to disk.</p>
 </dd>
 </dl>
 <div class="section" id="dictionary-contents">
-<h3>Dictionary Contents<a class="headerlink" href="#dictionary-contents" title="Permalink to this headline">¶</a></h3>
+<h4>Dictionary Contents<a class="headerlink" href="#dictionary-contents" title="Permalink to this headline">¶</a></h4>
 <p>These subtables describe how to read the possible data types in a Misc dictionary.</p>
 </div>
 </div>
 <div class="section" id="string-array-c-0x81">
-<h2>String Array (c == 0x81)<a class="headerlink" href="#string-array-c-0x81" title="Permalink to this headline">¶</a></h2>
+<h3>String Array (c == 0x81)<a class="headerlink" href="#string-array-c-0x81" title="Permalink to this headline">¶</a></h3>
 <table class="colwidths-given docutils align-center">
 <colgroup>
 <col style="width: 8%" />
@@ -1123,7 +1123,7 @@ how this field is written to disk.</p>
 </table>
 </div>
 <div class="section" id="other-array-c-0x80-or-c-0x81">
-<h2>Other Array (c == 0x80 or c &gt; 0x81)<a class="headerlink" href="#other-array-c-0x80-or-c-0x81" title="Permalink to this headline">¶</a></h2>
+<h3>Other Array (c == 0x80 or c &gt; 0x81)<a class="headerlink" href="#other-array-c-0x80-or-c-0x81" title="Permalink to this headline">¶</a></h3>
 <table class="colwidths-given docutils align-center">
 <colgroup>
 <col style="width: 8%" />
@@ -1158,7 +1158,7 @@ how this field is written to disk.</p>
 </table>
 </div>
 <div class="section" id="string-c-0x01">
-<h2>String (c == 0x01)<a class="headerlink" href="#string-c-0x01" title="Permalink to this headline">¶</a></h2>
+<h3>String (c == 0x01)<a class="headerlink" href="#string-c-0x01" title="Permalink to this headline">¶</a></h3>
 <table class="colwidths-given docutils align-center">
 <colgroup>
 <col style="width: 9%" />
@@ -1188,15 +1188,15 @@ how this field is written to disk.</p>
 </table>
 </div>
 <div class="section" id="bits-type-c-0x00-or-0x01-c-0x7f">
-<h2>Bits Type (c == 0x00 or 0x01 &lt; c &lt; 0x7f)<a class="headerlink" href="#bits-type-c-0x00-or-0x01-c-0x7f" title="Permalink to this headline">¶</a></h2>
+<h3>Bits Type (c == 0x00 or 0x01 &lt; c &lt; 0x7f)<a class="headerlink" href="#bits-type-c-0x00-or-0x01-c-0x7f" title="Permalink to this headline">¶</a></h3>
 <p>Read a single value whose Type corresponds to the UInt8 <a class="reference internal" href="#type-codes"><span class="std std-ref">Type code</span></a>.</p>
 </div>
 </div>
 <div class="section" id="compound-object-types">
-<h1>Compound Object Types<a class="headerlink" href="#compound-object-types" title="Permalink to this headline">¶</a></h1>
+<h2>Compound Object Types<a class="headerlink" href="#compound-object-types" title="Permalink to this headline">¶</a></h2>
 <p>Each of these objects contains at least one of the above simple object types.</p>
 <div class="section" id="phasecat">
-<h2>PhaseCat<a class="headerlink" href="#phasecat" title="Permalink to this headline">¶</a></h2>
+<h3>PhaseCat<a class="headerlink" href="#phasecat" title="Permalink to this headline">¶</a></h3>
 <table class="colwidths-given docutils align-center">
 <colgroup>
 <col style="width: 8%" />
@@ -1236,7 +1236,7 @@ how this field is written to disk.</p>
 </dl>
 </div>
 <div class="section" id="eventchannel">
-<h2>EventChannel<a class="headerlink" href="#eventchannel" title="Permalink to this headline">¶</a></h2>
+<h3>EventChannel<a class="headerlink" href="#eventchannel" title="Permalink to this headline">¶</a></h3>
 <p>A single channel of data related to a seismic event</p>
 <table class="colwidths-given docutils align-center">
 <colgroup>
@@ -1382,7 +1382,7 @@ how this field is written to disk.</p>
 </table>
 </div>
 <div class="section" id="seischannel">
-<h2>SeisChannel<a class="headerlink" href="#seischannel" title="Permalink to this headline">¶</a></h2>
+<h3>SeisChannel<a class="headerlink" href="#seischannel" title="Permalink to this headline">¶</a></h3>
 <p>A single channel of univariate geophysical data</p>
 <blockquote>
 <div><table class="colwidths-given docutils align-center">
@@ -1510,7 +1510,7 @@ how this field is written to disk.</p>
 </div></blockquote>
 </div>
 <div class="section" id="eventtracedata">
-<h2>EventTraceData<a class="headerlink" href="#eventtracedata" title="Permalink to this headline">¶</a></h2>
+<h3>EventTraceData<a class="headerlink" href="#eventtracedata" title="Permalink to this headline">¶</a></h3>
 <p>A multichannel record of time-series data related to a seismic event.</p>
 <blockquote>
 <div><table class="colwidths-given docutils align-center">
@@ -1676,7 +1676,7 @@ how this field is written to disk.</p>
 </dl>
 </div>
 <div class="section" id="seisdata">
-<h2>SeisData<a class="headerlink" href="#seisdata" title="Permalink to this headline">¶</a></h2>
+<h3>SeisData<a class="headerlink" href="#seisdata" title="Permalink to this headline">¶</a></h3>
 <p>A record containing multiple channels of univariate geophysical data.</p>
 <blockquote>
 <div><table class="colwidths-given docutils align-center">
@@ -1822,7 +1822,7 @@ how this field is written to disk.</p>
 </dl>
 </div>
 <div class="section" id="seishdr">
-<h2>SeisHdr<a class="headerlink" href="#seishdr" title="Permalink to this headline">¶</a></h2>
+<h3>SeisHdr<a class="headerlink" href="#seishdr" title="Permalink to this headline">¶</a></h3>
 <table class="colwidths-given docutils align-center">
 <colgroup>
 <col style="width: 8%" />
@@ -1917,7 +1917,7 @@ how this field is written to disk.</p>
 </dl>
 </div>
 <div class="section" id="seissrc">
-<h2>SeisSrc<a class="headerlink" href="#seissrc" title="Permalink to this headline">¶</a></h2>
+<h3>SeisSrc<a class="headerlink" href="#seissrc" title="Permalink to this headline">¶</a></h3>
 <table class="colwidths-given docutils align-center">
 <colgroup>
 <col style="width: 8%" />
@@ -2037,7 +2037,7 @@ how this field is written to disk.</p>
 </table>
 </div>
 <div class="section" id="seisevent">
-<h2>SeisEvent<a class="headerlink" href="#seisevent" title="Permalink to this headline">¶</a></h2>
+<h3>SeisEvent<a class="headerlink" href="#seisevent" title="Permalink to this headline">¶</a></h3>
 <table class="colwidths-given docutils align-center">
 <colgroup>
 <col style="width: 8%" />
@@ -2073,11 +2073,11 @@ how this field is written to disk.</p>
 </div>
 </div>
 <div class="section" id="data-type-codes">
-<h1>Data Type Codes<a class="headerlink" href="#data-type-codes" title="Permalink to this headline">¶</a></h1>
+<h2>Data Type Codes<a class="headerlink" href="#data-type-codes" title="Permalink to this headline">¶</a></h2>
 <p>Each Type code is written to disk as a UInt8, with the important exception of
 SeisIO custom object Type codes (which use UInt32).</p>
 <div class="section" id="loc-type-codes">
-<span id="loc-codes"></span><h2>Loc Type Codes<a class="headerlink" href="#loc-type-codes" title="Permalink to this headline">¶</a></h2>
+<span id="loc-codes"></span><h3>Loc Type Codes<a class="headerlink" href="#loc-type-codes" title="Permalink to this headline">¶</a></h3>
 <table class="colwidths-given docutils align-center">
 <colgroup>
 <col style="width: 33%" />
@@ -2105,7 +2105,7 @@ SeisIO custom object Type codes (which use UInt32).</p>
 </table>
 </div>
 <div class="section" id="resp-type-codes">
-<span id="resp-codes"></span><h2>Resp Type Codes<a class="headerlink" href="#resp-type-codes" title="Permalink to this headline">¶</a></h2>
+<span id="resp-codes"></span><h3>Resp Type Codes<a class="headerlink" href="#resp-type-codes" title="Permalink to this headline">¶</a></h3>
 <table class="colwidths-given docutils align-center">
 <colgroup>
 <col style="width: 33%" />
@@ -2130,7 +2130,7 @@ SeisIO custom object Type codes (which use UInt32).</p>
 </table>
 </div>
 <div class="section" id="other-type-codes">
-<span id="type-codes"></span><h2>Other Type Codes<a class="headerlink" href="#other-type-codes" title="Permalink to this headline">¶</a></h2>
+<span id="type-codes"></span><h3>Other Type Codes<a class="headerlink" href="#other-type-codes" title="Permalink to this headline">¶</a></h3>
 <p>Only the Types below are faithfully preserved in write/read of a :misc field
 dictionary; other Types are not written to file and can cause <code class="docutils literal notranslate"><span class="pre">wseis</span></code> to
 throw errors.</p>
@@ -2292,7 +2292,7 @@ throw errors.</p>
 </tbody>
 </table>
 <div class="section" id="seisio-object-type-codes">
-<span id="object-codes"></span><h3>SeisIO Object Type codes<a class="headerlink" href="#seisio-object-type-codes" title="Permalink to this headline">¶</a></h3>
+<span id="object-codes"></span><h4>SeisIO Object Type codes<a class="headerlink" href="#seisio-object-type-codes" title="Permalink to this headline">¶</a></h4>
 <table class="colwidths-given docutils align-center">
 <colgroup>
 <col style="width: 40%" />
@@ -2361,26 +2361,17 @@ throw errors.</p>
 <tr class="row-even"><td><p>0x45514d30</p></td>
 <td><p>EQMag</p></td>
 </tr>
-<tr class="row-odd"><td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>File Format Version History</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>File format versions &lt;0.50 are no longer supported; please email us if you</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>need to read in very old data.</p></td>
-<td></td>
-</tr>
 </tbody>
 </table>
+</div>
+</div>
+</div>
+<div class="section" id="file-format-version-history">
+<h2>File Format Version History<a class="headerlink" href="#file-format-version-history" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>File format versions &lt;0.50 are no longer supported; please email us if you
+need to read in very old data.</p>
+</div></blockquote>
 <table class="colwidths-given docutils align-center">
 <colgroup>
 <col style="width: 7%" />
@@ -2440,7 +2431,6 @@ throw errors.</p>
 </tr>
 </tbody>
 </table>
-</div>
 </div>
 </div>
 

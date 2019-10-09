@@ -1,7 +1,7 @@
 fname = path*"/SampleFiles/fdsn.conf"
+sac_pz_file = path*"/SampleFiles/SAC/test_sac.pz"
 hood_reg = Float64[44.8, 46.0, -122.4, -121.0]
 rainier_rad = Float64[46.852886, -121.760374, 0.0, 0.1]
-sac_pz_file = path*"/SampleFiles/test_sac.pz"
 
 printstyled("  FDSN web requests\n", color=:light_green)
 
@@ -158,4 +158,32 @@ printstyled("      request from GFZ\n", color=:light_green)
 S = get_data("FDSN", "GE.BKB..BH?", src="GFZ", s="2011-03-11T06:00:00", t="2011-03-11T06:05:00", v=0, y=false)
 if isempty(S)
   @warn(string("No data from GFZ request; check connection!"))
+end
+
+# ❄❄❄❄❄❄❄❄❄❄❄❄❄❄❄❄❄❄ (oh, California...)
+printstyled("    servers with special headers:\n", color=:light_green)
+ds = now()-Day(1)
+ds -= Millisecond(ds)
+s = string(ds)
+t = string(ds+Hour(1))
+
+rubric = [
+  "NCEDC" "BK.MOD..BHE"
+  "SCEDC" "CI.SDD..BHZ"
+]
+❄ = size(rubric, 1)
+
+for i = 1:❄
+  printstyled("      ", rubric[i,1], ":\n", color=:light_green)
+  printstyled("        station info\n", color=:light_green)
+  S = FDSNsta(rubric[i,2], s=s, t=t, msr=true, src=rubric[i,1])
+  if isempty(S)
+    printstyled("        No data; check headers & connection!\n", color=:red)
+  end
+
+  printstyled("        trace data\n", color=:light_green)
+  S = get_data("FDSN", rubric[i,2], src=rubric[i,1], s=s, t=t, msr=true, w=true)
+  if isempty(S)
+    printstyled("        No data; check headers & connection!\n", color=:red)
+  end
 end

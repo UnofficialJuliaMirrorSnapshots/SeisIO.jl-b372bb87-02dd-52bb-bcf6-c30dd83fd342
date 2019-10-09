@@ -1,11 +1,16 @@
 .. _webex:
 
-********
+########
 Examples
-********
+########
 
-FDSN data query
+***********************
+Timeseries data queries
+***********************
+
+FDSN dataselect
 ===============
+
 1. Download 10 minutes of data from four stations at Mt. St. Helens (WA, USA), delete the low-gain channels, and save as SAC files in the current directory.
 ::
 
@@ -29,27 +34,9 @@ FDSN data query
   te = "2011-03-11T06:05:00"
   R = get_data("FDSN", "GE.BKB..BH?", src="GFZ", s=ts, t=te, v=1, y=true)
 
-FDSN station query
-==================
+IRIS timeseries
+===============
 
-A sample FDSN station query
-::
-
-  S = FDSNsta("CC.VALT..,PB.B001..BS?,PB.B001..E??")
-
-
-FDSN event header/data query
-============================
-
-Get seismic and strainmeter records for the P-wave of the Tohoku-Oki great earthquake on two borehole stations and write to native SeisData format:
-::
-
-  S = FDSNevt("201103110547", "PB.B004..EH?,PB.B004..BS?,PB.B001..BS?,PB.B001..EH?")
-  wseis("201103110547_evt.seis", S)
-
-
-IRISWS data query
-=================
 Note that the "src" keyword is not used in IRIS queries.
 
 1. Get trace data from IRISws from ``TS`` to ``TT`` at channels ``CHA``
@@ -85,20 +72,42 @@ Note that the "src" keyword is not used in IRIS queries.
   S = get_data("IRIS", "CC.JRO..BHZ", s=ts, t=te, fmt="sacbl")
   T = get_data("IRIS", "CC.JRO..BHZ", s=ts, t=te, fmt="miniseed")
 
+******************
+FDSN station query
+******************
+
+Get channel information for strain and seismic channels at station PB.B001:
+
+::
+
+  S = FDSNsta("CC.VALT..,PB.B001..BS?,PB.B001..E??")
+
+****************
+FDSN event query
+****************
+
+Get seismic and strainmeter records for the P-wave of the Tohoku-Oki great earthquake on two borehole stations and write to native SeisData format:
+::
+
+  S = FDSNevt("201103110547", "PB.B004..EH?,PB.B004..BS?,PB.B001..BS?,PB.B001..EH?")
+  wseis("201103110547_evt.seis", S)
+
+
+*****************
 SeedLink sessions
-=================
+*****************
 1. An attended SeedLink session in DATA mode. Initiate a SeedLink session in DATA mode using config file SL.conf and write all packets received directly to file (in addition to parsing to S itself). Set nominal refresh interval for checking for new data to 10 s. A mini-seed file will be generated automatically.
 ::
 
   S = SeisData()
-  SeedLink!(S, "SL.conf", mode="DATA", r=10, w=true)
+  seedlink!(S, "SL.conf", mode="DATA", r=10, w=true)
 
 2. An unattended SeedLink download in TIME mode. Get the next two minutes of data from stations GPW, MBW, SHUK in the UW network. Put the Julia REPL to sleep while the request fills. If the connection is still open, close it (SeedLink's time bounds arent precise in TIME mode, so this may or may not be necessary). Pause briefly so that the last data packets are written. Synchronize results and write data in native SeisIO file format.
 ::
 
   sta = "UW.GPW,UW.MBW,UW.SHUK"
   s0 = now()
-  S = SeedLink(sta, mode="TIME", s=s0, t=120, r=10)
+  S = seedlink(sta, mode="TIME", s=s0, t=120, r=10)
   sleep(180)
   isopen(S.c[1]) && close(S.c[1])
   sleep(20)
@@ -110,7 +119,7 @@ SeedLink sessions
 ::
 
   sta = "UW.GPW, UW.MBW, UW.SHUK"
-  S1 = SeedLink(sta, mode="TIME", s=0, t=120)
+  S1 = seedlink(sta, mode="TIME", s=0, t=120)
 
 4. A SeedLink session in DATA mode with multiple servers, including a config file. Data are parsed roughly every 10 seconds. A total of 5 minutes of data are requested.
 ::
@@ -123,14 +132,14 @@ SeedLink sessions
   (d0,d1) = parsetimewin(st,en)
 
   S = SeisData()
-  SeedLink!(S, sta, mode="TIME", r=10.0, s=d0, t=d1)
+  seedlink!(S, sta, mode="TIME", r=10.0, s=d0, t=d1)
   println(stdout, "...first link initialized...")
 
   # Seedlink with a config file
   config_file = "seedlink.conf"
-  SeedLink!(S, config_file, r=10.0, mode="TIME", s=d0, t=d1)
+  seedlink!(S, config_file, r=10.0, mode="TIME", s=d0, t=d1)
   println(stdout, "...second link initialized...")
 
   # Seedlink with a config string
-  SeedLink!(S, "CC.VALT..???, UW.ELK..EHZ", mode="TIME", r=10.0, s=d0, t=d1)
+  seedlink!(S, "CC.VALT..???, UW.ELK..EHZ", mode="TIME", r=10.0, s=d0, t=d1)
   println(stdout, "...third link initialized...")

@@ -3,8 +3,9 @@ import Dates: DateTime, Hour, now
 import DelimitedFiles: readdlm
 import Random: rand, randperm, randstring
 import SeisIO: BUF, FDSN_sta_xml,
+  code2typ, typ2code,
   bad_chars, checkbuf!, checkbuf_8!, datafields, datareq_summ, endtime,
-  fillx_i16_le!, fillx_i32_be!, fillx_i32_le!, findhex, formats, get_HTTP_req,
+  fillx_i16_le!, fillx_i32_be!, fillx_i32_le!, findhex, formats, get_http_req,
   get_http_post, get_views, int2tstr, mean, minreq!,
   mktaper!, mktime, parse_charr, parse_chstr, parse_sl,
   read_sacpz!, read_sacpz, read_seed_resp!, read_seed_resp, read_station_xml!,
@@ -319,3 +320,6 @@ global_logger(logger)
 
 # Set some keyword defaults
 SeisIO.KW.comp = 0x00
+has_restricted = safe_isdir(path * "/SampleFiles/Restricted/")
+keep_log = false
+keep_samples = true

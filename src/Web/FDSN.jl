@@ -88,11 +88,7 @@ function FDSNsta(chans="*"::Union{String,Array{String,1},Array{String,2}};
     println(BODY)
   end
   open(xf, "w") do io
-    if occursin("ncedc", URL)
-      request("POST", URL, webhdr, BODY, response_stream=io, headers=["Host" => "service.ncedc.org", "User-Agent" => "curl/7.60.0", "Accept" => "*/*"])
-    else
-      request("POST", URL, webhdr, BODY, response_stream=io)
-    end
+    request("POST", URL, webhdr, BODY, response_stream=io)
   end
 
   # Build channel list
@@ -159,8 +155,11 @@ function FDSNget!(U::SeisData, chans::Union{String,Array{String,1},Array{String,
   # (3) Data query
   v > 0 && @info(tnote("Data query begins"))
   URL = string(fdsn_uhead(src), "dataselect/1/query")
-  if occursin("ncedc", URL) == true
+  if occursin("ncedc", URL) || occursin("scedc", URL)
     BODY = ""
+    if fmt != "miniseed"
+      @warn(string("format ", fmt, " ignored; server only allows miniseed."))
+    end
   else
     BODY = "format=" * fmt * "\n"
     if !isempty(opts)
@@ -217,11 +216,7 @@ function FDSNget!(U::SeisData, chans::Union{String,Array{String,1},Array{String,
                     '.')
 
       open(fname, "w") do io
-        if occursin("ncedc", URL)
-          request("POST", URL, webhdr, QUERY, readtimeout=to, response_stream=io, headers=["Host" => "service.ncedc.org", "User-Agent" => "curl/7.60.0", "Accept" => "*/*"])
-        else
-          request("POST", URL, webhdr, QUERY, readtimeout=to, response_stream=io)
-        end
+        request("POST", URL, webhdr, QUERY, readtimeout=to, response_stream=io)
       end
       io = open(fname, "r")
       parsable = true

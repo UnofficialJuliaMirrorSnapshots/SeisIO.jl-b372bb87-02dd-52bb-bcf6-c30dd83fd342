@@ -4,7 +4,7 @@ export chanspec, seis_www, track_on!, track_off!
 # Returns:
 #   R::Array{UInt8,1}, either request body or error data
 #   parsable::Bool, whether or not R is parsable
-function get_HTTP_req(url::String, req_info_str::String, to::Int; status_exception::Bool=false)
+function get_http_req(url::String, req_info_str::String, to::Int; status_exception::Bool=false)
   (R::Array{UInt8,1}, parsable::Bool) = try
     req = request(  "GET", url, webhdr,
                     readtimeout = to,
@@ -34,18 +34,10 @@ function get_HTTP_req(url::String, req_info_str::String, to::Int; status_excepti
 end
 
 function get_http_post(url::String, body::String, to::Int; status_exception::Bool=false)
-  headers = occursin("ncedc", url) ? ["Host" => "service.ncedc.org", "User-Agent" => "curl/7.60.0", "Accept" => "*/*"] : webhdr
   try
-    if occursin("ncedc", url)
-      req = request(  "POST", url, webhdr, body,
-                      readtimeout = to,
-                      status_exception = status_exception,
-                      headers=["Host" => "service.ncedc.org", "User-Agent" => "curl/7.60.0", "Accept" => "*/*"] )
-    else
-      req = request(  "POST", url, webhdr, body,
-                      readtimeout = to,
-                      status_exception = status_exception  )
-    end
+    req = request(  "POST", url, webhdr, body,
+                    readtimeout = to,
+                    status_exception = status_exception)
     if req.status == 200
       return (req.body, true)
     else
@@ -208,7 +200,7 @@ The allowed subfield widths before channel IDs break is identical to the FDSN
 standard: NN.SSSSS.LL.CCC (network name length ≤ 2 chars, etc.)
 
 #### SEEDLINK ONLY
-For SeedLink functions (`SeedLink!`, `has_stream`, etc.), channel IDs can
+For SeedLink functions (`seedlink!`, `has_stream`, etc.), channel IDs can
 include a fifth field (i.e. NET.STA.LOC.CHA.T) to set the "type" flag (one of
 DECOTL, for Data, Event, Calibration, blOckette, Timing, or Logs). Note that
 SeedLink calibration, timing, and logs are not supported by SeisIO.

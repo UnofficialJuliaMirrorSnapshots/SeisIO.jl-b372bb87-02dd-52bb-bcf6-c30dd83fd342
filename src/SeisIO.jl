@@ -24,6 +24,7 @@ include("CoreUtils/file_io.jl")
 include("CoreUtils/poly.jl")
 include("CoreUtils/calculus.jl")
 include("CoreUtils/mkchans.jl")
+include("CoreUtils/svn.jl")
 
 # =========================================================
 # Types and methods
@@ -99,6 +100,7 @@ export mseed_support, read_dataless, read_seed_resp!, read_seed_resp, RESP_wont_
 
 include("Submodules/Quake.jl")
 using .Quake:read_qml
+import .Quake:convert
 export read_qml
 include("Submodules/RandSeis.jl")
 

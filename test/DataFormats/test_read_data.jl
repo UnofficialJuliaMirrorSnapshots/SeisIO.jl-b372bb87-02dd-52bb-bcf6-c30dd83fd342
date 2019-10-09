@@ -6,21 +6,21 @@ nx_add = 1400000
 nx_new = 36000
 pref = path * "/SampleFiles/"
 cfile = pref * "Restricted/03_02_27_20140927.sjis.ch"
-files = String[ "99011116541W"                "uw"            "_"
-                "1day-100hz.segy"           "passcal"       "pa-full"
-                "1day-100hz.segy"           "passcal"       "passcal"
-                "1day-100hz.sac"                 "sac"           "_"
-                "1day-100hz.mseed"               "mseed"         "_"
-                "Restricted/2014092709*.cnt"  "win32"         "win"
-                "0215162000.c00"              "lennasc"       "_"
-                "geo-slist.csv"            "geocsv.slist"  "_"
-                "Restricted/SHW.UW.mseed"     "mseed"         "lo-mem"
-                "Restricted/test_rev_1.segy"  "segy"          "full"
-                "Restricted/test_rev_1.segy"  "segy"          "_"
-                "test_be.sac"                 "sac"           "full"
-                "test_be.sac"                 "sac"           "_"
-                "geo-tspair.csv"          "geocsv"        "_"      ]
-
+files = String[ "UW/00012502123W"               "uw"            "_"
+                "SEGY/03.334.12.09.00.0362.1"   "passcal"       "pa-full"
+                "SEGY/03.334.12.09.00.0362.1"   "passcal"       "passcal"
+                "SAC/test_le.sac"               "sac"           "_"
+                "SEED/test.mseed"               "mseed"         "_"
+                "Restricted/2014092709*.cnt"    "win32"         "win"
+                "ASCII/0215162000.c00"          "lennasc"       "_"
+                "ASCII/geo-slist.csv"           "geocsv.slist"  "_"
+                "Restricted/SHW.UW.mseed"       "mseed"         "lo-mem"
+                "Restricted/test_rev_1.segy"    "segy"          "full"
+                "Restricted/test_rev_1.segy"    "segy"          "_"
+                "SAC/test_be.sac"               "sac"           "full"
+                "SAC/test_be.sac"               "sac"           "_"
+                "ASCII/geo-tspair.csv"          "geocsv"        "_"
+                ]
 checkbuf_8!(buf, 65536)
 checkbuf_8!(buf, 4*(os + nx))
 checkbuf!(x, os + nx)
@@ -41,11 +41,11 @@ fillx_i32_be!(x, buf, nx, os)
 @test x[1+os:nx+os] == bswap.(y)
 
 # Do not run on Appveyor; it can't access restricted files, so this breaks
-if Sys.iswindows() == false
-  printstyled("  read_data\n", color=:light_green)
-  nf = size(files,1)
-  for n = 1:nf
-    fname = pref * files[n,1]
+printstyled("  read_data\n", color=:light_green)
+nf = size(files,1)
+for n = 1:nf
+  fname = pref * files[n,1]
+  if (occursin("Restricted", fname)==false || (has_restricted==true))
     fwild = fname[1:end-1] * "*"
     f_call = files[n,2]
     opt = files[n,3]

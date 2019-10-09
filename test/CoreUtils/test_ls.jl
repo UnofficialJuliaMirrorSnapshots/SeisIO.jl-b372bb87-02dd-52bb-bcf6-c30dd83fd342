@@ -15,30 +15,30 @@ S = [
       "CoreUtils/",
       "CoreUtils/test_ls.jl",
       "CoreUtils/poo",
-      "SampleFiles/99*",
-      "SampleFiles/990[1-2]*",
+      "SampleFiles/UW/*W",
+      "SampleFiles/UW/02*o",
       "CoreUtils/test_*"
     ]
 S_expect =  [
               ["test_calculus.jl", "test_ls.jl", "test_poly.jl", "test_time.jl", "test_typ2code.jl"],
               ["test_ls.jl"],
               String[],
-              ["99011116541W", "99011116541o"],
-              ["99011116541W", "99011116541o"],
+              ["00012502123W", "99011116541W"],
+              ["02062915175o", "02062915205o"],
               ["test_calculus.jl", "test_ls.jl", "test_poly.jl", "test_time.jl", "test_typ2code.jl"],
             ]
 
 # Test that ls returns the same files as `ls -1`
 for (n,v) in enumerate(S)
   files = String[splitdir(i)[2] for i in ls(v)]
-  if Sys.iswindows() == false
+  # if Sys.iswindows() == false
     expected = S_expect[n]
     @test files == expected
-  end
+  # end
   [@test isfile(f) for f in ls(v)]
 end
 # Test that ls invokes find_regex under the right circumstances
-@test change_sep(ls(S[5])) == change_sep(regex_find("SampleFiles/", r"990[1-2].*$"))
+@test change_sep(ls(S[5])) == change_sep(regex_find("SampleFiles/", r"02.*o$"))
 
 if safe_isfile(cfile)
   T = path .* [
@@ -46,7 +46,10 @@ if safe_isfile(cfile)
                 "/SampleFiles/*",
                 "/SampleFiles/Restricted/2014092709*cnt"
               ]
-  T_expect =  [63, 750, 60]
+  T_expect =  [63, 532, 60]
+  if safe_isfile(path .* "/SampleFiles/restricted.tar.gz")
+    T_expect[2] += 1
+  end
 
   # Test that ls finds the same number of files as bash `ls -1`
   for (n,v) in enumerate(T)

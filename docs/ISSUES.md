@@ -1,57 +1,29 @@
 # Known Issues
-If installation fails, and the problem isn't documented, please
-[open a new issue](https://github.com/jpjones76/SeisIO.jl/issues/). If possible,
-please include a text dump with the error message.
+* **Source tracking** (`:src` and copying `:src` to `:notes` on overwrite) is unreliable at present. Standardizing this is a priority for v0.5.0.
+* **`FDSNevq(..., src="all")`**: no checks are made for redundant events or that all servers are up (the latter is *not* always true). Can yield duplicates or lead to connection timeouts.
+* **SEED support** doesn't include all possible blockette types. Blockettes that aren't in the scope of SeisIO are skipped.
+  + `read_data("mseed", ...)` only parses blockette types listed in `SeisIO.SEED.mseed_support()`.
+  + `read_meta("dataless", ...)` only parses blockette types listed in `SeisIO.SEED.seed_support()`.
+* **SUDS support** doesn't include all possible structure types. The color coding of the structure number in the output of `SeisIO.SUDS.suds_support()` gives the status:
+  + *Green* structures should be readable without issue.
+  + *Yellow* structures contain metadata outside the scope of SeisIO. Info can be dumped to stdout at high verbosity but isn't read into memory.
+  + *Red* structures are skipped.
 
-## Oustanding
-* It's not clear whether or not SeedLink works with `mode="FETCH"`. This mode
-sometimes appears to close connections immediately without returning data and
-attempting to switch to more meaningful tests leads to timeout errors.
-* `FDSNevq` makes no checks for redundant events; using keyword `src="all"` is
-likely to yield duplicates.
+# External / Won't Fix
+* **Coverage**: rarely, reported code coverage drops to 94-95%, rather than 97-98%. This happens when Travis-CI fails to upload test results to code coverage services, even if tests pass. True coverage has been >97% since at least 2019-06-06.
+* **Geophone response translation**: a few permanent North American short-period stations have tremendous (two orders of magnitude) scaling problems with `translate_resp` and `remove_resp`.
+  * Test: using `get_data("FDSN", ...)`, check channel ``i`` with ``S.misc[i]["SensorDescription"] == "HS-1-LT/Quanterra 330 Linear Phase Composite"``.
+    + This description may be shorthand for "Geospace Technologies HS-1-LT geophone with Kinemetrics Quanterra Q330 digitizer", but no "HS-1-LT" exists on the [Geospace Technologies product website](https://www.geospace.com/sensors/).
+* **SEG Y rare variants**: not supported.
+  + Files with nonstandard trace headers.
+    - Through SEG Y rev 1.0, only six trace header values/positions were mandatory. SeisIO assumes "recommended" positions for fields like `:gain`.
+  + IBM Float is not supported on principle. IEEE Float has been the standard floating-point data format since *1985*. SEG Y is one of four extant binary data formats *in the entire world* with IBM Float.
+  + SEG Y rev 2 is not supported. This may be added if demand arises; please ask if you need it.
+  + Seismic Unix ("SU"), the "other" trace-only SEGY variant, is unsupported. We have never encountered this variant in the wild and only learned of its existence when looking for a PASSCAL reader in ObsPy. Again, please ask if you need it.
+    - Trying to read SU as PASSCAL won't work; trace headers are incompatible.
+* **IRIS XML validator**: may issue up to two warnings per channel for files produced with `write_sxml`: "No decimation found" and "Decimation cannot be null". Our files are fully compliant with FDSN station XML 1.1. These warnings are inconsistent and may be erroneous.
+  + SeisIO creates no `Decimation` nodes for `PolesZeros` response stages. No data center does, either (including IRIS). In both cases, when channel `i` of structure `S` satisfies the condition `typeof(S.resp[i]) == MultiStageResp`, and subconditions `length(S.resp[i].stage) == 1` and `typeof(S.resp[i].stage[1]) in (PZResp, PZResp64)`, the channel response lacks a Decimation node and warnings are thrown by the validator.
+    - See stationxml-validator issue [78](https://github.com/iris-edu/stationxml-validator/issues/78).
 
-## SEG Y Limitations
-* IBM Float data encoding (note: IBM Float != IEEE Float) is not supported and
-reads incorrectly.
-* SEG Y rev 2 read support is not yet implemented.
-* There is no reader for SU ("Seismic Unix"), the "other" headerless SEGY
-  variant; no reader is planned at this time.
-* Files with nonstandard trace headers might not read, or might have incorrect
-  header information.
-    * Prior to SEG Y rev 2.0, only six trace header values/positions were
-    mandatory. SeisIO assumes "recommended" positions to set fields like `:gain`.
-
-## SEED and SUDS Limitations
-* The following Blockette and packet types are skipped:
-  + Anything *not* listed in `?SeisIO.SEED.mseed_support` or `?SeisIO.SEED.seed_support`.
-  + Anything listed in red in `SeisIO.SUDS.suds_support()`
-
-# External to SeisIO
-1. Some data channels IDs in SeedLink are not unique, or are duplicates with
-different LOC subfields in `:id`, or have a LOC subfield that differs from the
-same channel's FDSN info.
-  * Separate parameter files for FDSN and SeedLink might be necessary with such
-  channels.
-  * This might be related to stations transmitting to multiple data centers or
-  being jointly operated by multiple seismic networks.
-  * Workaround: set a location code in the appropriate SeedLink request string(s).
-2. Permanent FDSN stations with Geospace HS-1 geophones have an instrument
-response issue.
-  * Test: `S.misc[i]["SensorDescription"] == "HS-1-LT/Quanterra 330 Linear Phase Composite"`.
-    + This description is shorthand for "Geospace Technologies HS-1-LT geophone
-    with Kinemetrics Quanterra Q330 digitizer"...
-    + ...probably. There is no "HS-1-LT" on the Geospace Technologies product
-    website (https://www.geospace.com/sensors/); there's HS-1, HS-1 3C, and
-    OMNI-X-LT.
-  * Issue: sensors don't handle response translation well; tremendous (two
-    orders of magnitude) scaling problems are introduced.
-  * These geophones might have wrong rolloff frequencies in their XML files.
-    All claim fc = 2.0 Hz, but manufacturer data claims fc can vary from 2.0
-    to 28 Hz.
-    + As of 2019-08-14, we have not tested whether the OMNI-X-LT response
-    curve (i.e., with fc = 15.0 Hz) is a better fit to the data.
-3. If coverage reported is <95%, rather than ~98%, it's most likely because
-Travis-CI broke their uploads to code coverage services.
-  * This can happen even when all tests pass on Travis-CI.
-  * The lower Code Coverage numbers mean that only Appveyor reports test coverage;
-  Appveyor coverage is lower because they can't handle encrypted test files.
+# Reporting New Issues
+If possible, please include a text dump of a minimum working example (MWE), including error(s) thrown (if any).

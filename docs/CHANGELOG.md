@@ -1,3 +1,70 @@
+### 2019-10-25
+* The string to read Lennartz SLIST (ASCII) in `read_data` has changed from
+"lennasc" to "lennartz".
+* Empty SAC character strings are written correctly by `writesac` again.
+* `writesac` now handles data gaps by writing one segment per file. Previous
+behavior of assuming no gaps was poorly documented, albeit intentional.
+* For better similarity to other software, the option to write to SAC as
+generic x-y data now uses the keyword "xy=true", rather than "ts=true".
+
+### 2019-10-23
+* Added `asdf_qml` to read QuakeML from ASDF files.
+
+### 2019-10-19
+* `write_hdf5` improvements:
+  + added KW `chans` to support writing only some channels from a structure.
+  + calling `write_hdf5` on an existing file now appends data to the file,
+  rather than recreating it.
+  + users can now specify `add=true` to add trace data to a file while preserving
+  the structure of existing traces. See `write_hdf5` docstring for details.
+  + users can now specify `ovr=true` to overwrite existing trace data in a file.
+  See `write_hdf5` docstring for details.
+  + irregularly-sampled channels are now skipped.
+
+* Performance
+  + Reduced memory overhead of `write_sxml` by ~80% with significant speedup.
+  + `ungap!` and `gapfill!` have been optimized for better memory usage.
+    - The docstring of `ungap!` now explicitly warns to call `merge` before `ungap`
+    if any channel has segments that aren't in chronological order.
+
+* Bugs/Consistency
+  * `endtime(t, fs)` once again behaves correctly for irregularly-sampled data.
+  * `ungap!` with a negative time gap now partly overwrites output with earlier
+  segments (corresponding to the time overlap).
+  * `merge!` once again works consistently with `MultiStageResp` responses.
+  * `write_hdf5` can now write gapped channels.
+
+### 2019-10-13
+* Added `write_hdf5` to allow writing complete structures to seismic HDF5 files.
+Currently only supports ASDF; PH5 may be added later.
+  + This functionality will be modified before v0.5.0 to allow writing
+  specific sub-windows of data structures to file.
+  + A `write_hdf5!` method will be added before v0.5.0 to allow overwrite of
+  subwindows within existing HDF5 files using (sub-windows of) data structures.
+
+### 2019-10-12
+* Added `write_sxml` to create station XML from SeisData headers.
+  + Note: output is valid FDSN station XML 1.1 but the IRIS validator may issue
+  up to two warnings per channel inconsistently; see stationxml-validator issue
+  [78](https://github.com/iris-edu/stationxml-validator/issues/78) for details.
+
+### 2019-10-08
+* `SEED.mseed_support()` and `SEED.seed_support()` now output some text; users
+don't need to check their respective help files.
+
+### 2019-10-03
+* Added kw `autoname` to `get_data`; see documentation for functionality
+and behavior. Implements request in issue #24.
+* Discovered/fixed a rare mini-SEED bug wherein the last packet of a request
+containing unencoded data could throw a BoundsError when padded with empty bytes.
+
+### 2019-10-02
+* The memory footprint of SeisIO has been reduced by moving most large files
+to https://github.com/jpjones76/SeisIO-TestData. SeisIO now requires ~3 MB
+rather than ~300 MB.
+  + The development version is somewhat unwieldy due to the commit history.
+  This can be safely pruned with BFG Repo-Cleaner at a max. file size of 50k.
+
 ### 2019-10-01
 * `read_data("seisio", ...)` now works as a wrapper to `rseis`
   + Note: this is a convenience wrapper and lacks the functionality of `rseis`.

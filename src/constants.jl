@@ -54,6 +54,7 @@ const sac_keys = (  String[ "delta", "depmin", "depmax", "scale", "odelta",
                     String[ "kstnm", "kevnm", "khole", "ko", "ka", "kt0", "kt1", "kt2",
                             "kt3", "kt4", "kt5", "kt6", "kt7", "kt8", "kt9", "kf", "kuser0",
                             "kuser1", "kuser2", "kcmpnm", "knetwk", "kdatrd", "kinst" ] )
+const sac_nul_c = UInt8[0x2d, 0x31, 0x32, 0x33, 0x34, 0x35, 0x20, 0x20]
 const sac_nul_f = -12345.0f0
 const sac_nul_i = Int32(-12345)
 const sac_nul_start = 0x2d
@@ -61,9 +62,9 @@ const sac_nul_Int8 = UInt8[0x31, 0x32, 0x33, 0x34, 0x35]
 const segy_ftypes  = Array{DataType, 1}([UInt32, Int32, Int16, Any, Float32, Any, Any, Int8]) # Note: type 1 is IBM Float32
 const seis_inst_codes = ('H', 'J', 'L', 'M', 'N', 'P', 'Z')
 const seisio_file_begin = UInt8[0x53, 0x45, 0x49, 0x53, 0x49, 0x4f]
-const sep = Base.Filesystem.pathsep()
 const sμ = 1000000.0
 const vSeisIO = Float32(0.53)
 const unindexed_fields = (:c, :n)
 const webhdr = Dict("User-Agent" => "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/76.0.3809.100 Chrome/76.0.3809.100 Safari/537.36") # lol
+const xml_endtime = 19880899199000000
 const μs = 1.0e-6

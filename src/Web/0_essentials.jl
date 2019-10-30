@@ -114,22 +114,23 @@ function track_off!(S::SeisData)
   return u
 end
 
-function savereq(D::Array{UInt8,1}, ext::String, net::String, sta::String,
-  loc::String, cha::String, s::String, t::String, q::String)
+function savereq(D::Array{UInt8,1}, ext::String, id::String, s::String)
   if ext == "miniseed"
     ext = "mseed"
-  elseif ext == "sacbl"
+  elseif occursin("sac", ext)
     ext = "SAC"
   end
-  ymd = split(s, r"[A-Z]")
-  (y, m, d) = split(ymd[1],"-")
-  j = md2j(Meta.parse(y), Meta.parse(m), Meta.parse(d))
-  i = replace(split(s, 'T')[2],':' => '.')
-  if loc == "--"
-    loc = ""
-  end
-  fname = string(join([y, string(j), i, namestrip(net), namestrip(sta), namestrip(loc), namestrip(cha)],'.'), ".", q, ".", ext)
-  safe_isfile(fname) && @warn(string("File ", fname, " contains an identical request. Overwriting."))
+  s_str = int2tstr(tstr2int(s))
+  yy = s_str[1:4]
+  mm = s_str[6:7]
+  dd = s_str[9:10]
+  HH = s_str[12:13]
+  MM = s_str[15:16]
+  SS = s_str[18:19]
+  nn = lpad(div(parse(Int64, s_str[21:26]), 1000), 3, '0')
+  jj = lpad(md2j(yy, mm, dd), 3, '0')
+  fname = join([yy, jj, HH, MM, SS, nn, id, "R", ext], '.')
+  safe_isfile(fname) && @warn(string("File ", fname, " contains an identical request; overwriting."))
   f = open(fname, "w")
   write(f, D)
   close(f)

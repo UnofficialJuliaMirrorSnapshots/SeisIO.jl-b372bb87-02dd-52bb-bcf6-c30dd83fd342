@@ -24,6 +24,7 @@ include("CoreUtils/file_io.jl")
 include("CoreUtils/poly.jl")
 include("CoreUtils/calculus.jl")
 include("CoreUtils/mkchans.jl")
+include("CoreUtils/svn.jl")
 
 # =========================================================
 # Types and methods
@@ -104,8 +105,8 @@ export read_qml
 include("Submodules/RandSeis.jl")
 
 include("Submodules/SeisHDF.jl")
-using .SeisHDF: read_hdf5, read_hdf5!, scan_hdf5
-export read_hdf5, read_hdf5!, scan_hdf5
+using .SeisHDF: read_hdf5, read_hdf5!, scan_hdf5, write_hdf5
+export read_hdf5, read_hdf5!, scan_hdf5, write_hdf5
 
 include("Submodules/SUDS.jl")
 include("Submodules/UW.jl")

@@ -8,6 +8,7 @@ function read_asdf!(  S::GphysData,
 
   SX = SeisData() # for XML
   idr = isa(id, String) ? id_to_regex(id) : id
+  (v > 2) && println("Reading IDs that match ", idr)
 
   if typeof(s) == String && typeof(t) == String
     d0 = s
@@ -31,16 +32,18 @@ function read_asdf!(  S::GphysData,
   W = f["Waveforms"]
   A = names(W)
   sort!(A)
+  (v > 2) && println("Net.sta found: ", A)
 
   for i in A
     if occursin(netsta, i)
       w = W[i]
       N = names(w)
       sort!(N)
+      (v > 2) && println("Traces found: ", N)
       for n in N
         if n == "StationXML"
           sxml = String(UInt8.(read(w[n])))
-          read_station_xml!(SX, sxml, msr=msr, noappend=false, s=s, t=t, v=v)
+          read_station_xml!(SX, sxml, msr=msr, s=s, t=t, v=v)
         elseif occursin(idr, n)
           x = w[n]
           nx = length(x)
@@ -50,16 +53,15 @@ function read_asdf!(  S::GphysData,
           # convert fs to sampling interval in ns
           Δ = round(Int64, 1.0e9/fs)
           t1 = t0 + (nx-1)*Δ
+          (v > 2) && println("t0 = ", t0,"; t1 = ", t1, "; ts = ", ts, "; te = ", te)
 
           if (ts ≤ t1) && (te ≥ t0)
             xi = 0
             i0, i1, t2 = get_trace_bounds(ts, te, t0, t1, Δ, nx)
             ni = i1-i0+1
-            trace_start = div(t0 + Δ*(i0-1), 1000)
-            trace_end = div(t0 + Δ*(i1-1), 1000)
-
             cid = String(split(n, "_", limit=2, keepempty=true)[1])
             j = findid(cid, S.id)
+            (v > 2) && println("cid = ", cid, " (found at index in S = ", j, ")")
             nX = div(te-ts, Δ)+1
             if j == 0
               T = eltype(x)
@@ -73,7 +75,6 @@ function read_asdf!(  S::GphysData,
               L = lastindex(S.x[j])
               if nt > 0
                 xi = getindex(ct, nt)
-                te = endtime(ct, getindex(getfield(S, :fs), j))
                 check_for_gap!(S, j, div(t2, 1000), ni, v)
               end
               if xi + ni > L
@@ -107,11 +108,12 @@ function read_asdf!(  S::GphysData,
   fill!(S.src, realpath(hdf))
 
   # merge in the XML that we read
-  sxml_mergehdr!(S, SX, noappend=true, nofs=true, s=s, t=t, v=v)
+  sxml_mergehdr!(S, SX, app=false, nofs=true, v=v)
 
   trunc_x!(S)
 
   # Done
+  close(f)
   return S
 end
 

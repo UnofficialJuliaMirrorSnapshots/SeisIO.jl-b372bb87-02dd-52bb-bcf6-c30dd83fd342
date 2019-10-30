@@ -205,7 +205,13 @@ function endtime(t::Array{Int64,2}, Δ::Int64)
   end
   return t_end
 end
-endtime(t::Array{Int64,2}, fs::Float64) = endtime(t, round(Int64, 1.0/(fs*μs)))
+function endtime(t::Array{Int64,2}, fs::Float64)
+  if fs == 0.0
+    return t[size(t,1), 2]
+  else
+    return endtime(t, round(Int64, 1.0/(fs*μs)))
+  end
+end
 
 function t_expand(t::Array{Int64,2}, fs::Float64)
   fs == 0.0 && return t[:,2]
@@ -236,7 +242,18 @@ function t_collapse(tt::Array{Int64,1}, fs::Float64)
   return t
 end
 
+function x_inds(t::Array{Int64,2})
+  nt = size(t, 1)-1
+  inds = zeros(Int64, nt, 2)
+  for i in 1:nt
+    inds[i,1] = t[i,1]
+    inds[i,2] = t[i+1,1] - (i == nt ? 0 : 1)
+  end
+  return inds
+end
+
 function t_win(T::Array{Int64,2}, Δ::Int64)
+  isempty(T) && return(T)
   n = size(T,1)-1
   if T[n+1,2] != 0
     T = vcat(T, [T[n+1,1] 0])

@@ -6,6 +6,8 @@ Blosc.set_num_threads(Sys.CPU_THREADS)
 path = Base.source_dir()
 
 const tracefields = (:az, :baz, :dist, :id, :loc, :fs, :gain, :misc, :name, :notes, :pha, :resp, :src, :t, :units, :x)
+const loc_qual_fields = (:se, :gap, :dmin, :dmax)
+const loc_qual_names = ("standardError", "azimuthalGap", "minimumDistance", "maximumDistance")
 
 # imports
 include("Quake/imports.jl")
@@ -22,8 +24,15 @@ include("Quake/Types/EventTraceData.jl")
 include("Quake/Types/EventChannel.jl")
 include("Quake/Types/SeisEvent.jl")
 
-# extensions
-for i in ls(path*"/Quake/Ext/*")
+# formats
+for i in ls(path*"/Quake/Formats/*")
+  if endswith(i, ".jl")
+    include(i)
+  end
+end
+
+# processing
+for i in ls(path*"/Quake/Processing/*")
   if endswith(i, ".jl")
     include(i)
   end

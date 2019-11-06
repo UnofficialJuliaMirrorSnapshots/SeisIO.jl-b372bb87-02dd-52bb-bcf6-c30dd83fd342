@@ -58,12 +58,16 @@ R = R[1]
 @test H.mag.scale == "MW"
 
 # Check H.loc
-@test H.loc.lat == 38.2963
-@test H.loc.lon == 142.498
-@test H.loc.dep == 19.7152
-@test H.loc.rms == 2.1567
+@test H.loc.lat ≈ 38.2963
+@test H.loc.lon ≈ 142.498
+@test H.loc.dep ≈ 19.7152
 @test H.loc.nst == 2643
-@test H.loc.src == "ISC"
+@test H.loc.gap ≈ 6.314
+@test H.loc.dt ≈ 0.31
+@test H.loc.se ≈ 2.1567
+@test H.loc.dmin ≈ 0.917
+@test H.loc.dmax ≈ 163.253
+@test H.loc.src == "smi:ISC/origid=602227159,ISC"
 
 # Check source params
 @test R.id == "600002952"
@@ -73,8 +77,52 @@ R = R[1]
 @test R.pax == [295.0 115.0 205.0; 55.0 35.0 0.0; 5.305e22 -5.319e22 1.4e20]
 @test R.planes == [25.0 203.0; 80.0 10.0; 90.0 88.0]
 @test R.st.dur == 70.0
-@test R.misc["methodID"] == "Best_double_couple"
+@test R.misc["methodID"] == "smi:ISC/methodID=Best_double_couple"
 @test R.misc["pax_desc"] == "azimuth, plunge, length"
-@test R.misc["author"] == "GCMT"
+@test split(R.src, ",")[2] == "GCMT"
 @test R.misc["planes_desc"] == "strike, dip, rake"
 @test R.misc["derivedOriginID"] == "600126955"
+
+printstyled("    file write\n", color=:light_green)
+xf = "test.xml"
+if isfile(xf)
+  safe_rm(xf)
+end
+write_qml(xf, H, R)
+H1, R1 = read_qml(xf)
+H1 = H1[1]
+R1 = R1[1]
+compare_SeisHdr(H1, H)
+compare_SeisSrc(R1, R)
+
+write_qml(xf, [H], [R])
+write_qml(xf, H)
+write_qml(xf, [H])
+H1, R1 = read_qml(xf)
+H1 = H1[4]
+R1 = R1[2]
+compare_SeisHdr(H1, H)
+compare_SeisSrc(R1, R)
+
+xstr = read(xml_evfile1)
+io = open(xf, "w")
+write(io, xstr)
+close(io)
+write_qml(xf, [H], [R])
+H1, R1 = read_qml(xf)
+H1 = H1[2:end]
+R1 = R1[2:end]
+H, R = read_qml(xml_evfile1)
+for i in 1:length(R)
+  compare_SeisHdr(H1[i], H[i])
+  compare_SeisSrc(R1[i], R[i])
+end
+
+printstyled("      does trying to append a non-XML file error?\n", color=:light_green)
+io = open(xf, "w")
+write(io, rand(UInt8, 64))
+close(io)
+@test_throws ErrorException write_qml(xf, H, R)
+
+# Clean up
+safe_rm(xf)

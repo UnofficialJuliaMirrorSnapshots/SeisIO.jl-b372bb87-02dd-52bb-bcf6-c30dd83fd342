@@ -5,7 +5,13 @@ hdf       = path*"/SampleFiles/HDF5/2days-40hz.h5"
 hdf_pat   = path*"/SampleFiles/HDF5/2days-40hz.h*"
 hdf_out1  = "test1.h5"
 hdf_out2  = "test2.h5"
+hdf_out3  = "test3.h5"
+hdf_out4  = "test4.h5"
 hdf_evt   = path*"/SampleFiles/HDF5/example.h5"
+safe_rm(hdf_out1)
+safe_rm(hdf_out2)
+safe_rm(hdf_out3)
+safe_rm(hdf_out4)
 
 id  = "CI.SDD..HHZ"
 idr = "C*.SDD..HH?"
@@ -64,8 +70,8 @@ printstyled("    scan_hdf5\n", color=:light_green)
 
 
 # HDF event read
-printstyled("    asdf_qml\n", color=:light_green)
-(H,R) = asdf_qml(hdf_evt)
+printstyled("    asdf_rqml\n", color=:light_green)
+(H,R) = asdf_rqml(hdf_evt)
 @test H[1].id == "20120404_0000041"
 @test H[2].id == "20120404_0000038"
 @test H[3].id == "20120404_0000039"
@@ -80,7 +86,7 @@ printstyled("    asdf_qml\n", color=:light_green)
 @test H[2].mag.scale == "ML"
 
 io = h5open(hdf_evt)
-(H1, R1) = asdf_qml(io)
+(H1, R1) = asdf_rqml(io)
 @test H == H1
 @test R == R1
 
@@ -131,8 +137,8 @@ redirect_stdout(out) do
   write_hdf5(hdf_out1, S4, ovr=true, add=true)
 end
 @test scan_hdf5(hdf_out1, level="trace") == [
-  "/Waveforms/CI.SDD/CI.SDD..HHZ__2019-07-08T00:00:00__2019-07-08T02:00:00__hhz_",
-  "/Waveforms/CI.SDD/CI.SDD..HHZ__2019-07-08T00:00:00__2019-07-08T23:59:59.975__hhz_",
+  "/Waveforms/CI.SDD/CI.SDD..HHZ__2019-07-08T00:00:00__2019-07-08T02:00:00__hhz",
+  "/Waveforms/CI.SDD/CI.SDD..HHZ__2019-07-08T00:00:00__2019-07-08T23:59:59.975__hhz",
   "/Waveforms/CI.SDD/StationXML"
   ]
 safe_rm(hdf_out1)
@@ -147,8 +153,8 @@ merge!(S3)
 write_hdf5( hdf_out1, S3 )
 scan3 = scan_hdf5(hdf_out1, level="trace")
 @test scan3 == [
-  "/Waveforms/CI.SDD/CI.SDD..HHZ__2019-07-08T00:00:00__2019-07-08T02:00:00__hhz_",
-  "/Waveforms/CI.SDD/CI.SDD..HHZ__2019-07-08T10:00:00__2019-07-08T12:00:00__hhz_",
+  "/Waveforms/CI.SDD/CI.SDD..HHZ__2019-07-08T00:00:00__2019-07-08T02:00:00__hhz",
+  "/Waveforms/CI.SDD/CI.SDD..HHZ__2019-07-08T10:00:00__2019-07-08T12:00:00__hhz",
   "/Waveforms/CI.SDD/StationXML"
   ]
 
@@ -185,21 +191,21 @@ if has_restricted
   append!(S, S1)
   safe_rm(hdf_out1)
   redirect_stdout(out) do
-    write_hdf5(hdf_out1, S, add=true, ovr=true, v=3)
+    write_hdf5(hdf_out1, S, add=true, ovr=true, v=3, tag="raw")
   end
   @test scan_hdf5(hdf_out1, level="trace") == [
-  "/Waveforms/CI.SDD/CI.SDD..HHZ__2019-07-07T00:00:00__2019-07-07T23:59:59.975__hhz_",
-  "/Waveforms/CI.SDD/CI.SDD..HHZ__2019-07-08T00:00:00__2019-07-08T23:59:59.975__hhz_",
+  "/Waveforms/CI.SDD/CI.SDD..HHZ__2019-07-07T00:00:00__2019-07-07T23:59:59.975__raw",
+  "/Waveforms/CI.SDD/CI.SDD..HHZ__2019-07-08T00:00:00__2019-07-08T23:59:59.975__raw",
   "/Waveforms/CI.SDD/StationXML",
-  "/Waveforms/JP.VONTA/JP.VONTA..E__2014-09-27T00:00:00__2014-09-27T23:59:59.99__e_",
-  "/Waveforms/JP.VONTA/JP.VONTA..H__2014-09-27T00:00:00__2014-09-27T23:59:59.99__h_",
-  "/Waveforms/JP.VONTA/JP.VONTA..N__2014-09-27T00:00:00__2014-09-27T23:59:59.99__n_",
-  "/Waveforms/JP.VONTA/JP.VONTA..U__2014-09-27T00:00:00__2014-09-27T23:59:59.99__u_",
+  "/Waveforms/JP.VONTA/JP.VONTA..E__2014-09-27T00:00:00__2014-09-27T23:59:59.99__raw",
+  "/Waveforms/JP.VONTA/JP.VONTA..H__2014-09-27T00:00:00__2014-09-27T23:59:59.99__raw",
+  "/Waveforms/JP.VONTA/JP.VONTA..N__2014-09-27T00:00:00__2014-09-27T23:59:59.99__raw",
+  "/Waveforms/JP.VONTA/JP.VONTA..U__2014-09-27T00:00:00__2014-09-27T23:59:59.99__raw",
   "/Waveforms/JP.VONTA/StationXML",
-  "/Waveforms/JP.VONTN/JP.VONTN..E__2014-09-27T00:00:00__2014-09-27T23:59:59.99__e_",
-  "/Waveforms/JP.VONTN/JP.VONTN..H__2014-09-27T00:00:00__2014-09-27T23:59:59.99__h_",
-  "/Waveforms/JP.VONTN/JP.VONTN..N__2014-09-27T00:00:00__2014-09-27T23:59:59.99__n_",
-  "/Waveforms/JP.VONTN/JP.VONTN..U__2014-09-27T00:00:00__2014-09-27T23:59:59.99__u_",
+  "/Waveforms/JP.VONTN/JP.VONTN..E__2014-09-27T00:00:00__2014-09-27T23:59:59.99__raw",
+  "/Waveforms/JP.VONTN/JP.VONTN..H__2014-09-27T00:00:00__2014-09-27T23:59:59.99__raw",
+  "/Waveforms/JP.VONTN/JP.VONTN..N__2014-09-27T00:00:00__2014-09-27T23:59:59.99__raw",
+  "/Waveforms/JP.VONTN/JP.VONTN..U__2014-09-27T00:00:00__2014-09-27T23:59:59.99__raw",
   "/Waveforms/JP.VONTN/StationXML"
   ]
 
@@ -209,12 +215,12 @@ if has_restricted
     write_hdf5(hdf_out2, S, chans=[2,3,4,9], add=true, ovr=true, v=3)
   end
   @test scan_hdf5(hdf_out2, level="trace") == [
-  "/Waveforms/CI.SDD/CI.SDD..HHZ__2019-07-07T00:00:00__2019-07-07T23:59:59.975__hhz_",
-  "/Waveforms/CI.SDD/CI.SDD..HHZ__2019-07-08T00:00:00__2019-07-08T23:59:59.975__hhz_",
+  "/Waveforms/CI.SDD/CI.SDD..HHZ__2019-07-07T00:00:00__2019-07-07T23:59:59.975__hhz",
+  "/Waveforms/CI.SDD/CI.SDD..HHZ__2019-07-08T00:00:00__2019-07-08T23:59:59.975__hhz",
   "/Waveforms/CI.SDD/StationXML",
-  "/Waveforms/JP.VONTA/JP.VONTA..H__2014-09-27T00:00:00__2014-09-27T23:59:59.99__h_",
-  "/Waveforms/JP.VONTA/JP.VONTA..N__2014-09-27T00:00:00__2014-09-27T23:59:59.99__n_",
-  "/Waveforms/JP.VONTA/JP.VONTA..U__2014-09-27T00:00:00__2014-09-27T23:59:59.99__u_",
+  "/Waveforms/JP.VONTA/JP.VONTA..H__2014-09-27T00:00:00__2014-09-27T23:59:59.99__h",
+  "/Waveforms/JP.VONTA/JP.VONTA..N__2014-09-27T00:00:00__2014-09-27T23:59:59.99__n",
+  "/Waveforms/JP.VONTA/JP.VONTA..U__2014-09-27T00:00:00__2014-09-27T23:59:59.99__u",
   "/Waveforms/JP.VONTA/StationXML"
   ]
 
@@ -248,6 +254,122 @@ if has_restricted
   @test S1.x[1] == S.x[9]
 end
 
+# HDF write with SeisEvent
+Ev = Array{SeisEvent,1}(undef,3)
+for i in 1:3
+  Ev[i] = rse_wb(3)
+end
+
+printstyled("      asdf_wqml\n", color=:light_green)
+
+printstyled("        append mode\n", color=:light_green)
+SHDR = [Ev[i].hdr for i in 1:3]
+SSRC = [Ev[i].source for i in 1:3]
+asdf_wqml(hdf_out2, Ev[1].hdr, Ev[1].source)
+asdf_wqml(hdf_out2, Ev[2])
+asdf_wqml(hdf_out2, Ev)
+asdf_wqml(hdf_out2, SHDR, SSRC)
+(H,R) = asdf_rqml(hdf_out2)
+@test length(H) == length(R) == 8
+
+# Check that data are appended in the right order
+inds = [1,2,1,2,3,1,2,3]
+for i in 1:length(H)
+  j = inds[i]
+  compare_SeisHdr(Ev[j].hdr, H[i])
+  compare_SeisSrc(Ev[j].source, R[i])
+end
+
+printstyled("        overwrite mode\n", color=:light_green)
+asdf_wqml(hdf_out2, Ev[2].hdr, Ev[2].source, ovr=true, v=1)
+(H,R) = asdf_rqml(hdf_out2)
+@test length(H) == length(R) == 1
+compare_SeisHdr(Ev[2].hdr, H[1])
+compare_SeisSrc(Ev[2].source, R[1])
+
+printstyled("        to new file\n", color=:light_green)
+asdf_wqml(hdf_out4, SHDR, SSRC)
+(H,R) = asdf_rqml(hdf_out4)
+for i in 1:3
+  compare_SeisHdr(SHDR[i], H[i])
+  compare_SeisSrc(SSRC[i], R[i])
+end
+
+printstyled("        append file with incompatible QML\n", color=:light_green)
+
+# Create incompatible QML in file
+xml_evfile1 = path*"/SampleFiles/XML/fdsnws-event_2017-01-12T03-18-55Z.xml"
+xml_buf = read(xml_evfile1)
+io = h5open(hdf_out4, "r+")
+o_delete(io, "QuakeML")
+io["QuakeML"] = xml_buf
+close(io)
+
+# Now try to write to the file...does it work?
+asdf_wqml(hdf_out4, SHDR, SSRC)
+(H,R) = asdf_rqml(hdf_out4)
+L = length(H)
+H = H[L-2:L]
+R = R[L-2:L]
+for i in 1:3
+  compare_SeisHdr(SHDR[i], H[i])
+  compare_SeisSrc(SSRC[i], R[i])
+end
+
+printstyled("      write SeisEvent\n", color=:light_green)
+printstyled("        to new file\n", color=:light_green)
+write_hdf5(hdf_out3, Ev[1])
+
+printstyled("        to existing file\n", color=:light_green)
+write_hdf5(hdf_out3, Ev[2], chans=[1,2])
+
+printstyled("        to appended file\n", color=:light_green)
+write_hdf5(hdf_out3, Ev[3], chans=[3])
+
+printstyled("      read_asdf_evt\n", color=:light_green)
+EvCat = read_asdf_evt(hdf_out3, Ev[1].hdr.id, msr=false)
+
+printstyled("        accuracy of SeisEvent i/o\n", color=:light_green)
+
+printstyled("          single-event read\n", color=:light_green)
+W = EvCat[1]
+Ev1 = deepcopy(Ev[1])
+compare_events(Ev1, W)
+
+EvCat = read_asdf_evt(hdf_out3, Ev[2].hdr.id, msr=false)
+W = EvCat[1]
+Ev2 = deepcopy(Ev[2])
+Ev2.data = Ev2.data[1:2]
+compare_events(Ev2, W)
+
+EvCat = read_asdf_evt(hdf_out3, Ev[3].hdr.id, msr=false)
+W = EvCat[1]
+Ev3 = deepcopy(Ev[3])
+Ev3.data = Ev3.data[3]
+compare_events(Ev3, W)
+
+printstyled("          multi-event read\n", color=:light_green)
+EvCat = read_asdf_evt(hdf_out3, msr=false)
+compare_events(EvCat[1], Ev1)
+compare_events(EvCat[2], Ev2)
+compare_events(EvCat[3], Ev3)
+
+if Sys.iswindows() == false
+  printstyled("          multi-file read\n", color=:light_green)
+  write_hdf5(hdf_out4, Ev1)
+  EC2 = read_asdf_evt("test[3-4].h5", msr=true)
+  inds = [1, 2, 3, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 1]
+  for i in 1:length(EC2)
+    j = inds[i]
+    if j > 0
+      compare_SeisHdr(EC2[i].hdr, EvCat[j].hdr)
+      compare_SeisSrc(EC2[i].source, EvCat[j].source)
+    end
+  end
+end
+
 # HDF write cleanup
 safe_rm(hdf_out1)
 safe_rm(hdf_out2)
+safe_rm(hdf_out3)
+safe_rm(hdf_out4)
